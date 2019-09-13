@@ -1,0 +1,9 @@
+.card{
+    width: 100%;
+}
+.awaiting-mail{
+    background-color:yellow;
+}
+.completed{
+    background-color:yellowgreen;
+}

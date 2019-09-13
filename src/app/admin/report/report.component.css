@@ -1,0 +1,13 @@
+.custom-calendar-input {
+    z-index: 2;
+    margin: 0;
+    opacity: 0;
+}
+
+.custom-calendar, .custom-calendar-input {
+    position: relative;
+    width: 100%;
+    height: calc(2.5rem + 2px);
+}
+
+.table table.innertbl td {border-top:none !important; padding:0 0 8px 0 !important;}

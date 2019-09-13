@@ -1,0 +1,87 @@
+<!-- BreadCrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb adminx-page-breadcrumb">
+        <li class="breadcrumb-item">Administration</li>
+        <li class="breadcrumb-item active"  aria-current="page">Manage TransactionTypes</li>
+    </ol>
+</nav>
+    
+<div class="pb-3">
+    <h1>Manage TransactionTypes</h1>
+</div>
+<div *mobxAutorun class="row">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner>   
+    <alert></alert> 
+    <div class="col-lg-5">
+            
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header-title">Transaction Type Details</div>
+
+            <nav class="card-header-actions">
+                <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                <i-feather name="minus-circle"></i-feather>
+                </a>
+            </nav>
+        </div>
+        <div class="card-body collapse show" id="card1">
+            <form [formGroup]="transactionTypeForm">
+                <div class="form-group">
+                <label class="form-label" for="exampleInputEmail1">TransactionType Name</label>
+                <input type="text" formControlName="transactiontypename" class="form-control" aria-describedby="roleName" placeholder="Enter Role Name">
+                <small id="emailHelp" class="form-text text-muted">This must be an approved transaction type.</small>
+                </div>
+                <button [disabled]="!transactionTypeForm.valid" *ngIf="buttonName === 'Add TransactionType'; else elseBlock"  class="btn btn-success">Add TransactionType</button>
+                <ng-template #elseBlock>
+                    <button [disabled]="!transactionTypeForm.valid" *ngIf="buttonName === 'Update TransactionType';" (click)="updateTransactionType()" class="btn btn-success">Update TransactionType</button>
+                </ng-template>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <!-- Table seamless striped -->
+        <div *ngIf="transactionTypeFacade.getAllTransactionTypes.length !== 0; else transactionTypeListElseBlock" class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Available Transaction Types</div>
+            </div>
+            <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Transaction Type Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let transactiontype of transactionTypeFacade.getAllTransactionTypes | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;">                                            
+                    <th scope="row">{{i + 1}}</th>
+                    <td>{{transactiontype.name}}</td>
+                    <td>
+                        <a (click)="editTransactionType(transactiontype.id)" class="btn btn-labeled-right btn-primary">
+                            <span class="btn-label">
+                                <i-feather name="Edit"></i-feather>
+                            </span>
+                            <span class="btn-text">
+                                Edit TransationType
+                            </span>
+                        </a>
+                        <!-- <button (click)="editRole(role.id)" class="btn btn-primary notika-btn-primary">Edit Role</button> -->
+                    </td>
+                </tr>                
+                </tbody>
+            </table>
+            <!-- // Table seamless striped -->
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        </div>
+        <ng-template #transactionTypeListElseBlock>
+            <h1 class="card mb-grid text-center"><b><em>No available transaction types</em></b></h1>
+        </ng-template>                            
+    </div>
+</div>

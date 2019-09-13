@@ -1,0 +1,86 @@
+<!-- BreadCrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb adminx-page-breadcrumb">
+        <li class="breadcrumb-item">Administration</li>
+        <li class="breadcrumb-item active"  aria-current="page">Manage Status</li>
+    </ol>
+</nav>
+
+<div class="pb-3">
+    <h1>Manage Status</h1>
+</div>
+<div *mobxAutorun class="row">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner>    
+    <div class="col-lg-5">
+            <alert></alert>
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header-title">Status Details</div>
+
+            <nav class="card-header-actions">
+                <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                <i-feather name="minus-circle"></i-feather>
+                </a>
+            </nav>
+        </div>
+        <div class="card-body collapse show" id="card1">
+            <form [formGroup]="statusForm">
+                <div class="form-group">
+                <label class="form-label" for="exampleInputEmail1">Status Name</label>
+                <input type="text" formControlName="statusname" class="form-control" aria-describedby="statusName" placeholder="Enter Status Name">
+                <small id="statusHelp" class="form-text text-muted">This must be an approved status name.</small>
+                </div>
+                <button [disabled]="!statusForm.valid" *ngIf="buttonName === 'Add Status'; else elseBlock" (click)="addStatus()" class="btn btn-success notika-btn-success">Add Status</button>
+                <ng-template #elseBlock>
+                    <button [disabled]="!statusForm.valid" *ngIf="buttonName === 'Update Status';" (click)="updateStatus()" class="btn btn-success notika-btn-success">Update Status</button>
+                </ng-template>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <!-- Table seamless striped -->
+        <div *ngIf="statusFacade.getAllStatus.length !== 0; else statusListElseBlock" class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Available Status</div>
+            </div>
+            <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Status Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let status of statusFacade.statusList | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;">                                            
+                    <th scope="row">{{i + 1}}</th>
+                    <td>{{status.name}}</td>
+                    <td>
+                        <a (click)="editStatus(status.id)" class="btn btn-labeled-right btn-primary">
+                            <span class="btn-label">
+                                <i-feather name="Edit"></i-feather>
+                            </span>
+                            <span class="btn-text">
+                                Edit Status
+                            </span>
+                        </a>
+                        <!-- <button (click)="editRole(role.id)" class="btn btn-primary notika-btn-primary">Edit Role</button> -->
+                    </td>
+                </tr>                
+                </tbody>
+            </table>
+            <!-- // Table seamless striped -->
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        </div>
+        <ng-template #statusListElseBlock>
+            <h1 class="card mb-grid text-center"><b><em>No available status</em></b></h1>
+        </ng-template>                            
+    </div>
+</div>

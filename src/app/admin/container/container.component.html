@@ -1,0 +1,217 @@
+<!-- Start Header Top Area -->
+<div class="adminx-container">
+    <nav class="navbar navbar-expand justify-content-between fixed-top">
+        <a class="navbar-brand mb-0 h1 d-none d-md-block" href="index.html">
+            <img src="./../../../assets/images/fav.png" class="navbar-brand-image d-inline-block align-top mr-2" alt="">
+            QueueIT
+        </a>
+        <form *ngIf="userAccess.auth" class="form-inline form-quicksearch d-none d-md-block mx-auto">
+            Welcome, &nbsp;{{userAccess.user.firstname}}&nbsp;&nbsp;{{userAccess.user.lastname}}
+        </form>
+        <div class="d-flex flex-1 d-block d-md-none">
+            <a class="sidebar-toggle ml-3">
+                <i-feather name="menu"></i-feather>
+            </a>
+        </div>
+
+        <ul class="navbar-nav d-flex justify-content-end mr-2">
+          <li class="nav-item dropdown">
+            <a class="nav-link avatar-with-name" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">
+              <img src="./../../../assets/images/user2.png" class="d-inline-block align-top" alt="">
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+              <a *ngIf="userAccess.auth" class="dropdown-item" [routerLink]="['/operations/login']" href="#">Login as Teller</a>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item text-danger" (click)="logout()">Log Out</button>
+            </div>
+          </li>
+        </ul>
+    </nav>
+    <!-- Sidebar -->
+    <div *ngIf="userAccess.auth" class="adminx-sidebar expand-hover push">
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/dashboard']" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon">
+                    <i-feather name="User">
+                            Welcome, &nbsp;{{userAccess.user.firstname}}&nbsp;&nbsp;{{userAccess.user.lastname}}
+                    </i-feather>
+                    </span>
+                    <span class="sidebar-nav-name">
+                            Welcome, &nbsp;{{userAccess.user.firstname}}&nbsp;&nbsp;{{userAccess.user.lastname}}
+                    </span>
+                    <span class="sidebar-nav-end">
+
+                    </span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/dashboard']" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon">
+                    <i-feather name="activity">
+                        Activity
+                    </i-feather>
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Activity
+                    </span>
+                    <span class="sidebar-nav-end">
+
+                    </span>
+                </a>
+            </li>
+
+            <li class="sidebar-nav-item" >
+                <a class="sidebar-nav-link" data-toggle="collapse" href="#administration" aria-expanded="false" aria-controls="administration">
+                    <span class="sidebar-nav-icon">
+                        <i-feather name="settings">
+                            Administration
+                        </i-feather>
+                    </span>
+                    <span class="sidebar-nav-name">
+                        Administration
+                    </span>
+                    <span class="sidebar-nav-end">
+                        <i-feather name="chevron-right"></i-feather>
+                    </span>
+                </a>
+                <ul class="sidebar-sub-nav collapse" id="administration">
+                    <li class="sidebar-nav-item">
+                        <a [routerLink]="['/admin/roles']" class="sidebar-nav-link">
+                        <span class="sidebar-nav-abbr">
+                            Mr
+                        </span>
+                        <span class="sidebar-nav-name">
+                            Manage Roles
+                        </span>
+                        </a>
+                    </li>
+        
+                    <li class="sidebar-nav-item">
+                        <a [routerLink]="['/admin/status']" class="sidebar-nav-link">
+                        <span class="sidebar-nav-abbr">
+                            Ms
+                        </span>
+                        <span class="sidebar-nav-name">
+                            Manage Status
+                        </span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a [routerLink]="['/admin/transactiontypes']" class="sidebar-nav-link">
+                        <span class="sidebar-nav-abbr">
+                            Mt
+                        </span>
+                        <span class="sidebar-nav-name">
+                            Manage Transaction Types
+                        </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="sidebar-nav-item">
+            <a class="sidebar-nav-link collapsed" data-toggle="collapse" href="#user" aria-expanded="false" aria-controls="user">
+                <span class="sidebar-nav-icon">
+                    <i-feather name="User">
+                        Manage Users
+                    </i-feather>
+                </span>
+                <span class="sidebar-nav-name">
+                    Manage Users
+                </span>
+                <span class="sidebar-nav-end">
+                    <i-feather name="chevron-right"></i-feather>
+                </span>
+            </a>
+
+            <ul class="sidebar-sub-nav collapse" id="user">
+                <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/update-user-profile']" class="sidebar-nav-link">
+                    <span class="sidebar-nav-abbr">
+                    Up
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Update User Profile
+                    </span>
+                </a>
+                </li>
+
+                <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/update-user-role']" class="sidebar-nav-link">
+                    <span class="sidebar-nav-abbr">
+                        Ur
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Update User Role
+                    </span>
+                </a>
+                </li>
+                <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/change-user-password']" class="sidebar-nav-link">
+                    <span class="sidebar-nav-abbr">
+                        Cp
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Change User Password
+                    </span>
+                </a>
+                </li>
+            </ul>
+            </li>
+
+            <li class="sidebar-nav-item">
+                <a class="sidebar-nav-link collapsed" data-toggle="collapse" href="#navUI" aria-expanded="false" aria-controls="navUI">
+                    <span class="sidebar-nav-icon">
+                    <i-feather name="book">
+                        Reports
+                    </i-feather>
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Reports
+                    </span>
+                    <span class="sidebar-nav-end">
+                        <i-feather name="chevron-right"></i-feather>
+                    </span>
+                </a>
+
+                <ul class="sidebar-sub-nav collapse" id="navUI">
+                    <li class="sidebar-nav-item">
+                        <a [routerLink]="['/admin/transaction-report']" class="sidebar-nav-link">
+                            <span class="sidebar-nav-abbr">
+                            Tr
+                            </span>
+                            <span class="sidebar-nav-name">
+                            Transaction Report
+                            </span>
+                        </a>
+                    </li>                    
+                </ul>
+            </li>
+            <li class="sidebar-nav-item">
+                <a [routerLink]="['/admin/login']" class="sidebar-nav-link" style="color: red">
+                    <span class="sidebar-nav-icon">
+                    <i-feather name="LogOut">
+                        Log Out
+                    </i-feather>
+                    </span>
+                    <span class="sidebar-nav-name">
+                    Log Out
+                    </span>
+                    <span class="sidebar-nav-end">
+
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div><!-- Sidebar End -->
+
+    <!-- Main Content -->
+    <div class="adminx-content">
+        <div class="adminx-main-content"> 
+            <div class="container-fluid">
+                <router-outlet></router-outlet>    
+            </div>
+        </div>
+    </div>
+</div>

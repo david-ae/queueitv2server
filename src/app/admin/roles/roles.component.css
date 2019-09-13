@@ -1,0 +1,10 @@
+
+.btn-primary {
+    color: #fff;
+    background:transparent;
+    border-color: #007bff;
+}
+
+a:hover{
+    background:#007bff linear-gradient(180deg,#258efe,#007bff) repeat-x;
+}

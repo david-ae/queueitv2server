@@ -1,0 +1,17 @@
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\queueitv2.deps.json
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\queueitv2.runtimeconfig.json
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\queueitv2.runtimeconfig.dev.json
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\queueitv2.dll
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\queueitv2.pdb
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Identity.MongoDB.dll
+C:\inetpub\wwwroot\queueitv2\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Identity.MongoDB.pdb
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.csprojAssemblyReference.cache
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.csproj.CoreCompileInputs.cache
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.RazorAssemblyInfo.cache
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.RazorAssemblyInfo.cs
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.AssemblyInfoInputs.cache
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.AssemblyInfo.cs
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.RazorTargetAssemblyInfo.cache
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.csproj.CopyComplete
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.dll
+C:\inetpub\wwwroot\queueitv2\obj\Release\netcoreapp2.2\queueitv2.pdb

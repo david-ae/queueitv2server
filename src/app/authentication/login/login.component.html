@@ -1,0 +1,55 @@
+<!-- Modal -->
+<!-- <form [formGroup]="roleSelectionForm">
+    <button #selectRoleButton type="button" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" hidden>Select a role</button>
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Select a Role</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+          <div class="modal-body">
+            <ul style="display: inline-flex; list-style: none;">
+              <li><button type="button" class="btn btn-info" (click)="goToAdministration()">Administrator</button></li>  &nbsp;&nbsp;
+              <li><button type="button" class="btn btn-warning" (click)="goToOperations()"> Operations </button></li>  
+            </ul>
+          </div>
+          <div class="modal-footer">
+          <button #closeModalButton type="button" class="btn btn-secondary" data-dismiss="modal" hidden>Close</button>
+          </div>
+      </div>
+      </div>
+  </div>
+</form> -->
+<!-- Modal -->
+<div class="adminx-container">        
+    <div class="page-login">
+      <div class="text-center">
+        <a class="navbar-brand mb-4 h1" [routerLink]="['/operations/login']">
+          <img class="navbar-brand-image d-inline-block align-top mr-2" src="assets/images/cbs-signature[15928]-new.png" alt="greatplacetowork">
+        </a>
+        <hr/>
+      </div>      
+  <alert></alert>
+        <div class="card-body">
+          <form [formGroup]="loginForm">
+            <div class="form-group">
+              <label for="exampleDropdownFormEmail1" class="form-label">Email address</label>
+              <input type="email" formControlName="username" class="form-control" id="exampleDropdownFormEmail1" placeholder="Enter Your Email">
+            </div>
+            <div class="form-group">
+              <label for="exampleDropdownFormPassword1" class="form-label">Password</label>
+              <input type="password" formControlName="password"  class="form-control" id="exampleDropdownFormPassword1" placeholder="Enter Your Password">
+            </div>
+            <button type="submit" (click)="login()" [disabled]="!loginForm.valid" class="btn btn-sm btn-block btn-primary">Login</button>
+          </form>
+        </div>
+        <div class="card-footer text-center">
+            <em> Old User?</em> &nbsp;&nbsp; <a [routerLink]="['/admin/login']"><small><em>Get New Profile</em></small></a>
+        </div>
+      </div>
+    </div>
+
+    

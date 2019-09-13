@@ -1,0 +1,113 @@
+<!-- BreadCrumb -->
+    <div *mobxAutorun class="row">               
+        <div class="col-lg-5">                
+            <div class="card mb-grid">
+                <div class="card-header d-flex justify-content-between align-items-center">
+    
+                <nav class="card-header-actions">
+                    <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                    <i-feather name="minus-circle"></i-feather>
+                    </a>
+                </nav>
+            </div>
+            <div class="card-body collapse show" id="card1">
+                <form [formGroup]="transactionForm">
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom01">First name</label>
+                            <input type="text" formControlName="firstname" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom02">Last name</label>
+                            <input type="text" formControlName="lastname" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom01">Transaction Type</label>
+                            <select class="form-control" formControlName="transactiontype">
+                                    <option value="0" disabled selected>--Select Transaction Type--</option>
+                                <option *ngFor="let transactionType of transactionTypeFacade.transactiontypes" [value]="transactionType.name">{{transactionType.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom01">Registration No</label>
+                            <input type="text" formControlName="registrationnumber" class="form-control" id="validationCustom01" placeholder="Registration Number" value="Mark" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom02">Amount</label>
+                            <input type="number" formControlName="amount" class="form-control" id="validationCustom02" placeholder="Amount" value="" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="validationCustom01">Assign to a Teller</label>
+                            <select class="form-control" formControlName="tellerid">
+                                    <option value="0" disabled selected>--Select Teller--</option>
+                                <option *ngFor="let seniorteller of operationsFacade.getSeniorTellerList" [value]="seniorteller.identity">{{seniorteller.firstname}}&nbsp;&nbsp;{{seniorteller.lastname}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <div class="radio-inline" *ngFor="let item of itemsList">
+                                <label><input formControlName="status" type="radio" checked="" class="i-checks" value="{{item.value}}" (change)="onItemChange(item)"> <i></i> 
+                                    <mark> {{item.name}}</mark>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button *ngIf="buttonName === 'Add Transaction'; else elseBlock" (click)="addTransaction()"  class="btn btn-success notika-btn-success">Add Transaction</button>
+                    <ng-template #elseBlock>
+                        <button *ngIf="buttonName === 'Update Transaction';" (click)="updateTransaction()" class="btn btn-success notika-btn-success">Update Transaction</button>
+                    </ng-template>
+                </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <!-- Table seamless striped -->
+            <div *ngIf="operationsFacade.getTransactionList.length !== 0; else transactionListBlock" class="card mb-grid">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <input type="text" [(ngModel)]="searchText" class="form-control" placeholder="Search Today's Transactions" [ngModelOptions]="{standalone:true}">
+                </div>
+                <table class="table table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Agent Name</th>
+                        <th scope="col">Trans. Type</th>
+                        <th scope="col">Reg. No.</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let transaction of operationsFacade.transactions | transaction: searchText | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;">                        
+                        <td>{{i + 1}}</td>
+                        <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
+                        <td>{{transaction.transactionType}}</td>
+                        <td>{{transaction.platenumber}}</td>
+                        <td>{{transaction.status}}</td>
+                        <td *ngIf="transaction.status != 'Returned'" >
+                            <a (click)="editTransaction(transaction.id)" class="btn btn-labeled-right btn-primary">
+                                <span class="btn-label">
+                                    <i-feather name="Edit"></i-feather>
+                                </span>
+                                <span class="btn-text">
+                                    Edit
+                                </span>
+                            </a>
+                        </td>
+                    </tr>                
+                    </tbody>
+                </table>
+                <!-- // Table seamless striped -->
+                <pagination-controls (pageChange)="p = $event"></pagination-controls>
+            </div>
+            <ng-template #transactionListBlock>
+                <h1 class="card mb-grid text-center"><b><em>No existing transactions for today</em></b></h1>
+            </ng-template>                            
+        </div>
+    </div>

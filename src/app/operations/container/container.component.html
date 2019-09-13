@@ -1,0 +1,67 @@
+<!-- Start Header Top Area -->
+<div class="adminx-container" style="padding-top: 1.0rem;">
+        <nav class="navbar navbar-expand justify-content-between fixed-top">
+            <a class="navbar-brand mb-0 h1 d-none d-md-block" href="index.html">
+                <img src="./../../../assets/images/fav.png" class="navbar-brand-image d-inline-block align-top mr-2" alt="">
+                QueueIT
+            </a>
+    
+            <div class="d-flex flex-1 d-block d-md-none">
+                <a class="sidebar-toggle ml-3">
+                    <i-feather name="menu"></i-feather>
+                </a>
+            </div>
+    
+            <ul class="navbar-nav d-flex justify-content-end mr-2">
+                <!-- Notificatoins -->
+                <li *ngIf="userAccess.isSeniorTeller" class="nav-item d-flex align-items-center mr-2">
+                    <a [routerLink]="['/operations/process-transactions']" class="btn btn-sm btn-secondary">
+                        Process Transactions
+                    </a>
+                </li>
+                <li *ngIf="userAccess.isTransactionalTeller || userAccess.isTeller" class="nav-item d-flex align-items-center mr-2">
+                    <a [routerLink]="['/operations/process-jobs']" class="btn btn-sm btn-secondary">
+                        Process Jobs
+                    </a>
+                </li>
+                <li *ngIf="userAccess.isTransactionalTeller || userAccess.isTeller"  class="nav-item d-flex align-items-center mr-2">
+                    <a [routerLink]="['/operations/checkout-jobs']" class="btn btn-sm btn-labeled-right btn-success">
+                        <span class="btn-label">
+                          <span class="oi oi-arrow-thick-right" aria-hidden="true"></span>
+                        </span>
+                        <span class="btn-text">
+                          Check Out
+                        </span>
+                      </a>
+                </li>
+                <!-- Notifications -->
+                <li class="nav-item dropdown">
+                <a class="nav-link avatar-with-name" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">
+                    <img src="./../../../assets/images/user2.png" class="d-inline-block align-top" alt="">
+                </a>
+                <div *ngIf="!userAccess.isTransactionalTeller || !userAccess.isTeller" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" [routerLink]="['/admin/login']" href="#">Login as Administrator</a>
+                        <div class="dropdown-divider"></div>
+                    <button type="button" class="dropdown-item text-danger" (click)="logout()">Log Out</button>
+                </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- Main Content -->
+        <div class="adminx-content">
+            <div class="adminx-main-content">
+                <div class="container-fluid">
+                    <ngx-spinner 
+                        bdOpacity = 0.9
+                        bdColor = "rgba(182,217,216,0.42)"
+                        size = "medium"
+                        color = "#48567c"
+                        type = "ball-running-dots"
+                        [fullScreen] = "true">
+                    </ngx-spinner> 
+                    <alert></alert>
+                    <router-outlet></router-outlet>    
+                </div>
+            </div>
+        </div>
+    </div>

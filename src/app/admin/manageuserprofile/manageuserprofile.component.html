@@ -1,0 +1,89 @@
+<!-- BreadCrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb adminx-page-breadcrumb">
+        <li class="breadcrumb-item">Administration</li>
+        <li class="breadcrumb-item active" aria-current="page">Manage User Profile</li>
+    </ol>
+</nav>
+
+<div class="pb-3">
+    <h1>Manage User Profile</h1>
+</div>
+<div *mobxAutorun class="row">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner>    
+    <div class="col-lg-5">
+            <alert></alert>
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">User Details</div>
+
+                <nav class="card-header-actions">
+                    <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                    <i-feather name="minus-circle"></i-feather>
+                    </a>
+                </nav>
+            </div>
+        <div class="card-body collapse show" id="card1">
+            <form [formGroup]="manageUserForm">
+                <div class="form-group">
+                    <label class="form-label" for="firstname">First Name</label>
+                    <input type="text" formControlName="firstname" class="form-control" aria-describedby="firstName" placeholder="Enter First Name">                
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lastname">Last Name</label>
+                    <input type="text" formControlName="lastname" class="form-control" aria-describedby="lastName" placeholder="Enter Last Name">                
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="exampleInputEmail">Email</label>
+                    <input type="text" formControlName="email" class="form-control" aria-describedby="Email" placeholder="Enter Email Address">                
+                </div>
+                <div class="form-group">                   
+                    <input type="checkbox" formControlName="isactive" value="IsActive">
+                    <label class="form-label" for="isActive">IsActive</label>
+                </div>
+                <input type="hidden" formControlName="id">   
+                <button [disabled]="!manageUserForm.valid" *ngIf="buttonName === 'Add New User'; else elseBlock" (click)="addUser()"  class="btn btn-success notika-btn-success">Add New User</button>
+                <ng-template #elseBlock>
+                    <button [disabled]="!manageUserForm.valid" *ngIf="buttonName === 'Update User';" (click)="updateUser()" class="btn btn-success notika-btn-success">Update User</button>
+                </ng-template>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <!-- Table seamless striped -->
+        <div *ngIf="userFacade.getUsers != 0; else elseNoUsersBlock" class="card mb-grid">
+            <input type="text" [(ngModel)]="searchText" class="form-control" placeholder="Search Users" [ngModelOptions]="{standalone:true}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Current Users</div>
+            </div>
+            <br/>
+            <div style="padding: 2%;height: 4%;">
+                <div class="card" style="width: 14rem; float: left;" *ngFor="let user of userFacade.getUsers | user: searchText | paginate: { itemsPerPage: 3, currentPage: p };">
+                    <img style="width: 13.5rem;" class="card-img-top" src="./../../../assets/images/user.png" alt="Card image cap">
+                    <div class="card-body">
+                        <h6 class="card-title" style="font-size: small;">
+                            {{user.firstname}}&nbsp;&nbsp;{{user.lastname}}&nbsp;&nbsp;| &nbsp;&nbsp;isActive&nbsp;&nbsp;<input type="checkbox" value="IsActive" [checked]="user.isActive"/>
+                        </h6>
+                        <button (click)="editUser(user.identity)" class="btn btn-info">Edit</button> &nbsp;
+                        <button *ngIf="user.isActive"  (click)="deactivateUser(user.identity)" class="btn btn-danger">Deactivate</button> &nbsp;
+                        <button *ngIf="!user.isActive"  (click)="reactivateUser(user.identity)" class="btn btn-active">Reactivate</button>                             
+                        <br/>
+                        <br/>
+                    </div>
+                </div>
+            </div>        
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>   
+        </div>
+        <ng-template #elseNoUsersBlock>
+            <h1 class="card mb-grid text-center"><b><em>No existing users</em></b></h1>
+        </ng-template> 
+    </div>
+</div>

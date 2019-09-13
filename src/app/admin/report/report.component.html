@@ -1,0 +1,160 @@
+<!-- BreadCrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb adminx-page-breadcrumb">
+        <li class="breadcrumb-item">Administration</li>
+        <li class="breadcrumb-item active" aria-current="page">Reports</li>
+    </ol>
+</nav>
+
+<div class="pb-3">
+    <h1>Reports</h1>
+</div>
+<div *mobxAutorun class="row">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner>    
+    <div class="col-lg-5">
+            <alert></alert>
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Reports</div>
+
+                <nav class="card-header-actions">
+                    <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                    <i-feather name="minus-circle"></i-feather>
+                    </a>
+                </nav>
+            </div>
+        <div class="card-body collapse show" id="card1">
+            <form [formGroup]="reportForm">
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <button class="btn btn-outline-primary calendar" (click)="dFrom.toggle()" type="button">From</button>
+                            <input class="form-control" placeholder="yyyy-mm-dd" style="width: 65%;"
+                                    name="dp" formControlName="dateFrom" ngbDatepicker #dFrom="ngbDatepicker">
+                            <div class="input-group-append">
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group"> 
+                                <button class="btn btn-outline-info calendar" (click)="dTo.toggle()" type="button">To</button>
+                            <input class="form-control" placeholder="yyyy-mm-dd" style="width: 65%;"
+                                    name="dp" formControlName="dateTo" ngbDatepicker #dTo="ngbDatepicker">
+                            <div class="input-group-append">
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" (click)="retrieveReportInRange()"  class="btn btn-success">GO</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">SnapShot</div>
+                <nav class="card-header-actions">
+                    <a class="card-header-action" data-toggle="collapse" href="#card2" aria-expanded="false" aria-controls="card2">
+                        <i-feather name="minus-circle"></i-feather>
+                    </a>
+                </nav>
+            </div>
+            <div *ngIf="reportFacade.getTransactionsInRange.length != 0; else analyseReportElseBlock" class="card-body collapse show" id="card2">
+                <div class="form-row">
+                    <div class="col-md-3 mb-3">
+                        Submitted:&nbsp;&nbsp;{{reportFacade.getSummaryOfSubmittedTransactions}}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        Completed:&nbsp;&nbsp;{{reportFacade.getSummaryOfCompletedTransactions}}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        Returned:&nbsp;&nbsp;{{reportFacade.getSummaryOfReturnedTransactions}}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        Total:&nbsp;&nbsp;{{reportFacade.getSumOfTransactionsInRange}}
+                    </div>
+                </div>
+            </div>
+            <ng-template #analyseReportElseBlock>
+                <h3 class="card mb-grid text-center"><b><em>No transactions to analyse</em></b></h3>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<div *mobxAutorun class="row">
+    <div class="card mb-grid col-lg-12">
+        <div *ngIf="reportFacade.getTransactionsInRange.length != 0; else reportElseBlock">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header-title">
+                            Transactions between <em>{{displayDateFrom.day}}-{{displayDateFrom.month}}-{{displayDateFrom.year}} </em>
+                            &nbsp; and &nbsp;
+                            <em> {{displayDateTo.day}}-{{displayDateTo.month}}-{{displayDateTo.year}}</em>
+                        </div>
+                      </div>
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Customer</th>
+                                <th>Reg. No.</th>
+                                <th>Amount</th>
+                                <th>transaction. Type</th>
+                                <th>Submitted</th>
+                                <th>Completed</th>
+                                <th>Rejected</th>
+                                <th>Created</th>
+                                <th>Created By</th>
+                                <th>Treated By</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let transaction of reportFacade.getTransactionsInRange | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;">
+                                <td>{{i + 1}}</td>
+                                <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;&nbsp;{{transaction.customerName.lastname}} </td>
+                                <td>{{transaction.platenumber}}</td>
+                                <td>{{transaction.amount}}</td>
+                                <td>{{transaction.transactionType}}</td>
+                                <td>{{transaction.timeSubmitted | date:' h:mma'}}</td>
+                                <td>{{transaction.timeCompleted | date:' h:mma'}}</td>
+                                <td *ngIf="transaction.timeRejected != 'null'"> 
+                                    <table class="innertbl">
+                                        <tbody>
+                                            <tr *ngFor="let time of transaction.timeRejected" style="word-wrap: break-word;">
+                                                <td>{{time | date:' h:mma'}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>			
+                                </td>
+                                <td>{{transaction.timeSubmitted | date: 'dd/MM/yy'}}</td>
+                                <td>{{transaction.createdBy.firstname}}&nbsp;{{transaction.createdBy.lastname}}</td>
+                                <td >
+                                    <table class="innertbl">
+                                        <tbody>
+                                            <tr *ngFor="let teller of transaction.treatedBy" style="word-wrap: break-word;">
+                                                    <td>{{teller.firstname}}&nbsp;{{teller.lastname}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>						
+                                </td>				
+                                <td>{{transaction.status}}</td>					
+                            </tr>
+                        </tbody>
+                    </table>    
+                    <pagination-controls (pageChange)="p = $event"></pagination-controls>                    
+                </div>                
+    </div>
+    <ng-template #reportElseBlock>
+        <h3 class="card mb-grid text-center"><b><em>No transactions request made</em></b></h3>
+    </ng-template>
+</div>

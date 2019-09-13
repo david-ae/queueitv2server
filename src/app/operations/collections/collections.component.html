@@ -1,0 +1,117 @@
+<!-- BreadCrumb -->
+<div *mobxAutorun class="row">   
+    <div class="col-lg-12">
+            <alert></alert>
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Today's Transactions</div>
+                <app-statusreportbar></app-statusreportbar>
+                <nav class="card-header-actions">
+                    <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                    <i-feather name="minus-circle"></i-feather>
+                    </a>
+                </nav>
+            </div>
+        <div class="card-body collapse show" id="card1">
+            <form>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="validationCustom01">Search By Status</label>
+                        <select class="form-control">
+                                <option value="" disabled selected>--Select Status--</option>
+                            <option *ngFor="let status of statusFacade.statusList" [value]="status.id">{{status.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="validationCustom02">Search By Transaction Type</label>
+                        <select class="form-control">
+                            <option value="" disabled selected>--Select Transaction Type--</option>
+                            <option *ngFor="let transactionType of transactionTypeFacade.getAllTransactionTypes" [value]="transactionType.id">{{transactionType.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                        <input type="text" [(ngModel)]="searchText" class="form-control" 
+                        placeholder="Filter Transaction By Reg Number, Amount, Transaction Type" [ngModelOptions]="{standalone: true}">
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div *mobxAutorun class="row">
+    <div class="col-lg-12">
+        <div class="card mb-grid" *ngIf="operationsFacade.getTransactionList.length !== 0; else transactionListBlock">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Transactions</div>
+            </div>
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="col">#</th>
+                        <th class="col">Agent Name</th>
+                        <th class="col">Trans. Type</th>
+                        <th class="col">Reg. No.</th>
+                        <th class="col">Submitted</th>
+                        <th class="col">Rejected</th>
+                        <th class="col">Completed</th>
+                        <th  class="col">Treated By</th>
+                        <th class="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let transaction of operationsFacade.transactions | transaction: searchText | tellertransaction: searchText | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;" class="active">
+                        <td>{{i + 1}}</td>
+                        <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
+                        <td>{{transaction.transactionType}}</td>
+                        <td>{{transaction.platenumber}}</td>
+                        <td>{{transaction.timeSubmitted | date:'mediumTime' }}</td>
+                        <td *ngIf="transaction.timeRejected.length !== 0; else rejectedTransaction" >
+                            <table class="innertbl">
+                                <tbody>
+                                    <tr *ngFor="let time of transaction.timeRejected" style="word-wrap: break-word;">
+                                            <td>{{ time | date:'mediumTime' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>                                            
+                        </td>
+                        <ng-template #rejectedTransaction>
+                            <td>Never Rejected</td>
+                        </ng-template>   
+                        <td *ngIf="transaction.timeCompleted !== null; else completedTransaction" >{{transaction.timeCompleted | date:'mediumTime' }}</td>
+                        <ng-template #completedTransaction>
+                            <td>Not Completed</td>
+                        </ng-template>   
+                        <td>
+                            <table class="innertbl">
+                                <tbody>
+                                    <tr *ngFor="let teller of transaction.treatedBy" style="word-wrap: break-word;">
+                                        <td>{{teller.firstname}}&nbsp;&nbsp;{{teller.lastname}}</td>
+                                    </tr>
+                                </tbody>
+                            </table> 
+                        </td>
+                        <td>{{transaction.status}}</td>
+                        <td *ngIf="transaction.status == 'Processing'">
+                            <button (click)="completeTransaction(transaction.id)"  class="btn btn-info" >Complete</button>
+                        </td>
+                        <td *ngIf="transaction.status == 'Completed'">
+                            <button (click)="returnedTransaction(transaction.id)" class="btn btn-info btn-success" >Return Job</button>
+                        </td>
+                        <td *ngIf="transaction.status == 'Processing' || transaction.status == 'Submitted'">
+                            <button (click)="rejectTransaction(transaction.id)" class="btn btn-danger" >Reject</button>
+                        </td>
+                    </tr>                                    
+                </tbody>
+            </table>     
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>                    
+        </div> 
+    </div>  
+    <div class="col-md-12">
+        <ng-template #transactionListBlock>
+            <div class="card text-center mb-grid">
+                <h3><b><em>No transactions today</em></b></h3>
+            </div>
+        </ng-template>   
+    </div>          
+</div>    

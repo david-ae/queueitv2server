@@ -1,0 +1,32 @@
+
+<div class="adminx-container">        
+  <div class="page-login">
+    <div class="text-center">
+      <a class="navbar-brand mb-4 h1" [routerLink]="['/operations/login']">
+        <img class="navbar-brand-image d-inline-block align-top mr-2" src="assets/images/cbs-signature[15928]-new.png" alt="greatplacetowork">
+      </a>
+      <hr/>
+    </div>      
+<alert></alert>
+      <div class="card-body">
+        <form [formGroup]="loginForm">
+            <a [routerLink]="['/admin/login']" class="btn btn-sm btn-block btn-primary" style="color: white">Login as Administrator</a>
+            <br>
+          <div class="form-group">
+            <label for="exampleDropdownFormEmail1" class="form-label">Email address</label>
+            <input type="email" formControlName="username" class="form-control" id="exampleDropdownFormEmail1" placeholder="Enter Your Email">
+          </div>
+          <div class="form-group">
+            <label for="exampleDropdownFormPassword1" class="form-label">Password</label>
+            <input type="password" formControlName="password"  class="form-control" id="exampleDropdownFormPassword1" placeholder="Enter Your Password">
+          </div>
+          <button type="submit" (click)="login()" [disabled]="!loginForm.valid" class="btn btn-sm btn-block btn-success">Login</button>
+        </form>
+      </div>
+      <div class="card-footer text-center">
+          <em> Old User?</em> &nbsp;&nbsp; <a [routerLink]="['/operations/getnewprofile']"><small><em>Get New Profile</em></small></a>
+      </div>
+    </div>
+  </div>
+
+  

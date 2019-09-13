@@ -1,0 +1,86 @@
+<!-- BreadCrumb -->
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb adminx-page-breadcrumb">
+        <li class="breadcrumb-item">Administration</li>
+        <li class="breadcrumb-item active"  aria-current="page">Manage Roles</li>
+    </ol>
+</nav>
+
+<div class="pb-3">
+    <h1>Manage Roles</h1>
+</div>
+<div *mobxAutorun class="row">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner>    
+    <div class="col-lg-5">
+            <alert></alert>
+        <div class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header-title">Role Details</div>
+
+            <nav class="card-header-actions">
+                <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
+                <i-feather name="minus-circle"></i-feather>
+                </a>
+            </nav>
+        </div>
+        <div class="card-body collapse show" id="card1">
+            <form [formGroup]="roleForm">
+                <div class="form-group">
+                <label class="form-label" for="exampleInputEmail1">Role Name</label>
+                <input type="text" formControlName="rolename" class="form-control" aria-describedby="roleName" placeholder="Enter Role Name">
+                <small id="emailHelp" class="form-text text-muted">This must be an approved role name.</small>
+                </div>
+                <button [disabled]="!roleForm.valid" *ngIf="buttonName === 'Add Role'; else elseBlock" (click)="addRole()"  class="btn btn-success notika-btn-success">Add Role</button>
+                <ng-template #elseBlock>
+                    <button [disabled]="!roleForm.valid" *ngIf="buttonName === 'Update Role';" (click)="updateRole()" class="btn btn-success notika-btn-success">Update Role</button>
+                </ng-template>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <!-- Table seamless striped -->
+        <div *ngIf="roleFacade.getAllRoles.length !== 0; else roleListElseBlock" class="card mb-grid">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header-title">Available Roles</div>
+            </div>
+            <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Role Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let role of roleFacade.getAllRoles | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;">                                            
+                    <th scope="row">{{i + 1}}</th>
+                    <td>{{role.name}}</td>
+                    <td>
+                        <a (click)="editRole(role.id)" class="btn btn-labeled-right btn-primary">
+                            <span class="btn-label">
+                                <i-feather name="Edit"></i-feather>
+                            </span>
+                            <span class="btn-text">
+                                Edit Role
+                            </span>
+                        </a>
+                        <!-- <button (click)="editRole(role.id)" class="btn btn-primary notika-btn-primary">Edit Role</button> -->
+                    </td>
+                </tr>                
+                </tbody>
+            </table>
+            <!-- // Table seamless striped -->
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        </div>
+        <ng-template #roleListElseBlock>
+            <h1 class="card mb-grid text-center"><b><em>No available roles</em></b></h1>
+        </ng-template>                            
+    </div>
+</div>

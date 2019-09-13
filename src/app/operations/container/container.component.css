@@ -1,0 +1,21 @@
+.ul-class {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .li-class {
+    float: left;
+  }
+  
+  .li-class a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 5px;
+    text-decoration: none;
+  }
+  .li-class a:hover {
+    background-color: cornflowerblue;
+  }

@@ -1,0 +1,45 @@
+<div *mobxAutorun class="adminx-container d-flex justify-content-center align-items-center" style="padding: 0.5rem;">    
+    <div class="page-login">
+        <ngx-spinner 
+        bdOpacity = 0.9
+        bdColor = "rgba(182,217,216,0.42)"
+        size = "medium"
+        color = "#48567c"
+        type = "ball-running-dots"
+        [fullScreen] = "true">
+    </ngx-spinner> 
+        <alert></alert>
+      <div class="text-center">
+        <a class="navbar-brand mb-4 h1" [routerLink]="['/auth/login']">
+          <img class="navbar-brand-image d-inline-block align-top mr-2" src="./../../../assets/images/cbs-signature[15928]-new.png" alt="greatplacetowork">
+        </a>
+        <hr/>
+      </div>
+        <div class="card-body">
+          <form [formGroup]="getNewUserProfileForm">
+            <a [routerLink]="['/admin/login']" class="btn btn-sm btn-block btn-primary" style="color: white">Back to Login</a>
+            <br/>
+            <h3 class="text-center">Get Your New Profile Here</h3>
+            <div class="form-group">
+              <label for="exampleDropdownFormEmail1" class="form-label">Email address</label>
+              <input type="email" formControlName="email" class="form-control" id="exampleDropdownFormEmail1" placeholder="Enter Email Address">
+            </div>
+            <div class="form-group" *ngIf="isNotNull; else elseNoUserFound">
+                <p class="card-text">
+                     <em>Name: &nbsp;<b>{{userAccess.user.firstname}}&nbsp;&nbsp;{{userAccess.user.lastname}}</b></em>
+                </p>
+            </div>
+            <div class="form-group" *ngIf="isNotNull">
+                <p class="card-text" *ngFor="let role of userAccess.user.roles">
+                    <em>Role: &nbsp;<b>{{role}}</b></em>
+                </p>
+            </div>
+            <button *ngIf="!isNotNull" [disabled]="!getNewUserProfileForm.valid" (click)="getUserDetails()" class="btn btn-sm btn-block btn-success">Retrieve Details</button>
+            <button *ngIf="isNotNull"  class="btn btn-sm btn-block btn-success" (click)="getNewUserProfile()" >Create New Profile</button>            
+            <ng-template #elseNoUserFound>
+                <h1 *ngIf="isNotNull">No Existing User with that Email. Please verify and try again</h1>
+            </ng-template>         
+          </form>
+        </div>
+    </div>
+</div>
