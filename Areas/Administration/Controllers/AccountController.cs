@@ -20,663 +20,663 @@ using queueitv2.Model.DomainModel.valueobjects;
 
 namespace queueitv2.Areas.Administration.Controllers
 {
-    [Route("api/administration/[controller]")]
-    [ApiController]
-    public class AccountController : ControllerBase
+  [Route("api/administration/[controller]")]
+  [ApiController]
+  public class AccountController : ControllerBase
+  {
+    private UnitOfWork _unitOfWork;
+
+    #region "Identity"
+    private readonly SignInManager<Users> _signInManager;
+    private readonly UserManager<Users> _userManager;
+    #endregion
+
+    #region "Others"
+    private readonly IConfiguration _configuration;
+    private readonly JsonSerializerSettings _serializerSettings;
+    #endregion
+
+    #region logger
+    private ILogger<AccountController> _logger;
+    #endregion
+
+    public AccountController(
+        UserManager<Users> userManager,
+        SignInManager<Users> signInManager,
+        IConfiguration configuration,
+        ILogger<AccountController> logger,
+        UnitOfWork unitOfWork
+        )
     {
-        private UnitOfWork _unitOfWork;
+      _userManager = userManager;
+      _signInManager = signInManager;
+      _configuration = configuration;
+      _logger = logger;
+      _unitOfWork = unitOfWork;
+      _serializerSettings = new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      };
+    }
 
-        #region "Identity"
-        private readonly SignInManager<Users> _signInManager;
-        private readonly UserManager<Users> _userManager;
-        #endregion
-
-        #region "Others"
-        private readonly IConfiguration _configuration;
-        private readonly JsonSerializerSettings _serializerSettings;
-        #endregion
-
-        #region logger
-        private ILogger<AccountController> _logger;
-        #endregion
-
-        public AccountController(
-            UserManager<Users> userManager,
-            SignInManager<Users> signInManager,
-            IConfiguration configuration,
-            ILogger<AccountController> logger,
-            UnitOfWork unitOfWork
-            )
+    // POST api/values
+    [HttpPost, Route("register")]
+    public async Task<object> Register([FromBody]ManageUserApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-            _logger = logger;
-            _unitOfWork = unitOfWork;
-            _serializerSettings = new JsonSerializerSettings
+          return BadRequest(ModelState);
+        }
+
+        var user = new Users
+        {
+          FirstName = model.firstname,
+          LastName = model.lastname,
+          Email = model.email,
+          UserName = model.email,
+          UserType = "Modern User",
+          isActive = true,
+          Datecreated = DateTime.Now
+        };
+
+        var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
+
+        if (result.Succeeded)
+        {
+          //await _signInManager.SignInAsync(user, false);
+          var response = new
+          {
+            id = user.Id,
+            //auth_token = await GenerateJwtToken(user.UserName, user),
+            expires_in = 300,
+            firstname = user.FirstName,
+            lastname = user.LastName,
+            email = user.Email,
+            roles = user.Roles
+          };
+
+          var json = JsonConvert.SerializeObject(response, _serializerSettings);
+          return new OkObjectResult(json);
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return new BadRequestObjectResult(model);
+    }
+
+    [HttpPost, Route("login")]
+    public async Task<object> Login([FromBody]UserLoginApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
+        }
+        var user = await _userManager.FindByEmailAsync(model.Username);
+
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+        object response = null;
+
+        switch (result.Succeeded)
+        {
+          case true:
+            // Serialize and return the response
+            response = new
             {
-                Formatting = Formatting.Indented
+              id = user.Id,
+              auth_token = await GenerateJwtToken(user.UserName, user),
+              expires_in = 300,
+              authenticated = true
             };
+            break;
+          case false:
+            // Serialize and return the response
+            response = new
+            {
+              id = "",
+              auth_token = "",
+              expires_in = 0,
+              authenticated = false
+            };
+            break;
         }
 
-        // POST api/values
-        [HttpPost, Route("register")]
-        public async Task<object> Register([FromBody]ManageUserApiModel model)
+        var json = JsonConvert.SerializeObject(response, _serializerSettings);
+        return new OkObjectResult(json);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return new BadRequestObjectResult(model);
+    }
+
+    [HttpPost, Route("changeuserpassword")]
+    public async Task<IActionResult> Reset([FromBody]ChangePasswordApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var user = new Users
-                {
-                    FirstName = model.firstname,
-                    LastName = model.lastname,
-                    Email = model.email,
-                    UserName = model.email,
-                    UserType = "Modern User",
-                    isActive = true,
-                    Datecreated = DateTime.Now
-                };
-
-                var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
-
-                if (result.Succeeded)
-                {
-                    //await _signInManager.SignInAsync(user, false);
-                    var response = new
-                    {
-                        id = user.Id,
-                        //auth_token = await GenerateJwtToken(user.UserName, user),
-                        expires_in = 300,
-                        firstname = user.FirstName,
-                        lastname = user.LastName,
-                        email = user.Email,
-                        roles = user.Roles
-                    };
-
-                    var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                    return new OkObjectResult(json);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestObjectResult(model);
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("login")]
-        public async Task<object> Login([FromBody]UserLoginApiModel model)
+        var user = await _userManager.FindByEmailAsync(model.email);
+
+        if (user != null)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var user = await _userManager.FindByEmailAsync(model.Username);
+          var result = await _userManager.ChangePasswordAsync(user, model.newPassword, model.confirmNewPassword);
 
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+          if (result.Succeeded)
+          {
+            return new OkObjectResult(user);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-                object response = null;
+      return new BadRequestObjectResult(model);
+    }
 
-                switch (result.Succeeded)
-                {
-                  case true:
-                        // Serialize and return the response
-                        response = new
-                        {
-                          id = user.Id,
-                          auth_token = await GenerateJwtToken(user.UserName, user),
-                          expires_in = 300,
-                          authenticated = true
-                        };
-                    break;
-                  case false:
-                        // Serialize and return the response
-                        response = new
-                        {
-                          id = "",
-                          auth_token = "",
-                          expires_in = 0,
-                          authenticated = false
-                        };
-                    break;
-                }               
+    [HttpPost, Route("getallusers")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+      try
+      {
+        var users = await _unitOfWork.Users.GetAll();
 
-                var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                return new OkObjectResult(json);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
+        var userVos = turnUsersToUserVO(users);
 
-            return new BadRequestObjectResult(model);
+        return Ok(userVos);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return new BadRequestResult();
+    }
+
+    [HttpPost, Route("getalltellers")]
+    public async Task<IActionResult> GetAllTellers()
+    {
+      try
+      {
+        var users = await _unitOfWork.Users.GetAll();
+
+        var tellers = new List<Users>();
+
+        foreach (var user in users)
+        {
+          if (user.Roles.Contains("TELLER"))
+          {
+            tellers.Add(user);
+          }
         }
 
-        [HttpPost, Route("changeuserpassword")]
-        public async Task<IActionResult> Reset([FromBody]ChangePasswordApiModel model)
+        var userVos = turnUsersToUserVO(tellers);
+
+        return Ok(userVos);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return new BadRequestResult();
+    }
+
+    [HttpPost, Route("getallactiveusers")]
+    public async Task<IActionResult> GetAllActiveUsers()
+    {
+      try
+      {
+        var users = await _unitOfWork.Users.GetAll();
+
+        var activeUsers = new List<Users>();
+
+        foreach (var user in users)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var user = await _userManager.FindByEmailAsync(model.email);
-
-                if (user != null)
-                {
-                    var result = await _userManager.ChangePasswordAsync(user, model.newPassword, model.confirmNewPassword);
-
-                    if (result.Succeeded)
-                    {
-                        return new OkObjectResult(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }            
-
-            return new BadRequestObjectResult(model);
+          if (user.isActive == true)
+          {
+            activeUsers.Add(user);
+          }
         }
 
-        [HttpPost, Route("getallusers")]
-        public async Task<IActionResult> GetAllUsers()
+        var userVos = turnUsersToUserVO(activeUsers);
+
+        return Ok(userVos);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return new BadRequestResult();
+    }
+
+    [HttpPost, Route("removerole")]
+    public async Task<IActionResult> RemoveFromRole([FromBody]ManageRoleApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
         {
-            try
-            {
-                var users = await _unitOfWork.Users.GetAll();
-
-                var userVos = turnUsersToUserVO(users);
-
-                return Ok(userVos);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestResult();
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("getalltellers")]
-        public async Task<IActionResult> GetAllTellers()
+        var user = await _userManager.FindByEmailAsync(model.email);
+
+        if (user != null)
         {
-            try
-            {
-                var users = await _unitOfWork.Users.GetAll();
+          var result = await _userManager.RemoveFromRoleAsync(user, model.rolename);
 
-                var tellers = new List<Users>();
+          if (result.Succeeded)
+          {
+            return new OkObjectResult(user);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-                foreach(var user in users)
-                {
-                    if (user.Roles.Contains("TELLER"))
-                    {
-                        tellers.Add(user);
-                    }
-                }
+      return new BadRequestObjectResult(model);
+    }
 
-                var userVos = turnUsersToUserVO(tellers);
-
-                return Ok(userVos);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestResult();
+    [HttpPost, Route("addusertorole")]
+    public async Task<IActionResult> AddUserToRole([FromBody]ManageRoleApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("getallactiveusers")]
-        public async Task<IActionResult> GetAllActiveUsers()
+        var user = await _userManager.FindByEmailAsync(model.email);
+
+        if (user != null)
         {
-            try
-            {
-                var users = await _unitOfWork.Users.GetAll();
+          var result = await _userManager.AddToRoleAsync(user, model.rolename);
 
-                var activeUsers = new List<Users>();
-                
-                foreach(var user in users)
-                {
-                    if(user.isActive == true)
-                    {
-                        activeUsers.Add(user);
-                    }
-                }
+          if (result.Succeeded)
+          {
+            return new OkObjectResult(user);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-                var userVos = turnUsersToUserVO(activeUsers);
+      return new BadRequestObjectResult(model);
+    }
 
-                return Ok(userVos);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestResult();
+    [HttpPost, Route("addroletouser")]
+    public async Task<IActionResult> AddRoleToUser([FromBody]UserRoleViewModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("removerole")]
-        public async Task<IActionResult> RemoveFromRole([FromBody]ManageRoleApiModel model)
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        var role = await _unitOfWork.Roles.GetById(model.RoleId);
+        var result = _userManager.AddToRoleAsync(user, role.name);
+
+        if (result.IsCompletedSuccessfully)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+          return Ok();
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-                var user = await _userManager.FindByEmailAsync(model.email);
+      return BadRequest();
+    }
 
-                if (user != null)
-                {
-                    var result = await _userManager.RemoveFromRoleAsync(user, model.rolename);
-
-                    if (result.Succeeded)
-                    {
-                        return new OkObjectResult(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestObjectResult(model);
+    [HttpPost, Route("updateuser")]
+    public async Task<IActionResult> ModifyUser([FromBody]ManageUserApiModel model)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("addusertorole")]
-        public async Task<IActionResult> AddUserToRole([FromBody]ManageRoleApiModel model)
+        var user = await _userManager.FindByIdAsync(model.id);
+
+        if (user != null)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+          user.FirstName = model.firstname;
+          user.LastName = model.lastname;
+          user.Email = model.email;
+          user.UpdatedOn = DateTime.Now;
 
-                var user = await _userManager.FindByEmailAsync(model.email);
+          var result = await _userManager.UpdateAsync(user);
 
-                if (user != null)
-                {
-                    var result = await _userManager.AddToRoleAsync(user, model.rolename);
+          if (result.Succeeded)
+          {
+            return Ok(user);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-                    if (result.Succeeded)
-                    {
-                        return new OkObjectResult(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
+      return BadRequest();
+    }
 
-            return new BadRequestObjectResult(model);
+    [HttpPost, Route("deactivateuser")]
+    public async Task<IActionResult> DeactivateUser([FromBody]string id)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("addroletouser")]
-        public async Task<IActionResult> AddRoleToUser([FromBody]UserRoleViewModel model)
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user != null)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+          user.isActive = false;
 
-                var user = await _userManager.FindByIdAsync(model.UserId);
-                var role = await _unitOfWork.Roles.GetById(model.RoleId);
-                var result = _userManager.AddToRoleAsync(user, role.name);
+          var result = await _userManager.UpdateAsync(user);
 
-                if (result.IsCompletedSuccessfully)
-                {
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
+          if (result.Succeeded)
+          {
+            return Ok(user);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-            return BadRequest();
+      return BadRequest(ModelState);
+    }
+
+    [HttpPost, Route("reactivateuser")]
+    public async Task<IActionResult> ReactivateUser([FromBody]string id)
+    {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          return BadRequest(ModelState);
         }
 
-        [HttpPost, Route("updateuser")]
-        public async Task<IActionResult> ModifyUser([FromBody]ManageUserApiModel model)
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user != null)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+          user.isActive = true;
 
-                var user = await _userManager.FindByIdAsync(model.id);
+          var result = await _userManager.UpdateAsync(user);
 
-                if (user != null)
-                {
-                    user.FirstName = model.firstname;
-                    user.LastName = model.lastname;
-                    user.Email = model.email;
-                    user.UpdatedOn = DateTime.Now;
-
-                    var result = await _userManager.UpdateAsync(user);
-
-                    if (result.Succeeded)
-                    {
-                        return Ok(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest();
+          if (result.Succeeded)
+          {
+            return Ok(user);
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-        [HttpPost, Route("deactivateuser")]
-        public async Task<IActionResult> DeactivateUser([FromBody]string id)
+      return BadRequest(ModelState);
+    }
+
+    [HttpPost, Route("getNewAccountProfile")]
+    public async Task<IActionResult> getNewAccountProfile([FromBody] string email)
+    {
+      try
+      {
+        var teller = await _unitOfWork.Accounts.GetTellerByEmail(email);
+
+        if (teller != null)
         {
-            try
+          var user = new Users
+          {
+            Email = teller.username,
+            FirstName = teller.firstname,
+            LastName = teller.lastname,
+            UserName = teller.username,
+            NormalizedEmail = teller.username.ToUpper(),
+            NormalizedUserName = teller.username.ToUpper(),
+            Roles = teller.roles,
+            legacyId = teller.Identity.ToString(),
+            UserType = "Legacy User",
+            isActive = true,
+            Datecreated = DateTime.Now
+          };
+
+          var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
+
+          if (result.Succeeded)
+          {
+            //await _signInManager.SignInAsync(user, false);
+            var response = new
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+              id = user.Id,
+              //auth_token = await GenerateJwtToken(user.UserName, user),
+              expires_in = 300,
+              firstname = user.FirstName,
+              lastname = user.LastName,
+              email = user.Email,
+              roles = user.Roles
+            };
 
-                var user = await _userManager.FindByIdAsync(id);
+            var json = JsonConvert.SerializeObject(response, _serializerSettings);
+            return new OkObjectResult(json);
+          }
 
-                if (user != null)
-                {
-                    user.isActive = false;
-
-                    var result = await _userManager.UpdateAsync(user);
-
-                    if (result.Succeeded)
-                    {
-                        return Ok(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(ModelState);
+          return Ok(user);
         }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
 
-        [HttpPost, Route("reactivateuser")]
-        public async Task<IActionResult> ReactivateUser([FromBody]string id)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+      return BadRequest(email);
+    }
 
-                var user = await _userManager.FindByIdAsync(id);
-
-                if (user != null)
-                {
-                    user.isActive = true;
-
-                    var result = await _userManager.UpdateAsync(user);
-
-                    if (result.Succeeded)
-                    {
-                        return Ok(user);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(ModelState);
-        }
-
-        [HttpPost, Route("getNewAccountProfile")]
-        public async Task<IActionResult> getNewAccountProfile([FromBody] string email)
-        {
-            try
-            {
-                var teller = await _unitOfWork.Accounts.GetTellerByEmail(email);
-
-                if (teller != null)
-                {
-                    var user = new Users
-                    {
-                        Email = teller.username,
-                        FirstName = teller.firstname,
-                        LastName = teller.lastname,
-                        UserName = teller.username,
-                        NormalizedEmail = teller.username.ToUpper(),
-                        NormalizedUserName = teller.username.ToUpper(),
-                        Roles = teller.roles,
-                        legacyId = teller.Identity.ToString(),
-                        UserType = "Legacy User",
-                        isActive = true, 
-                        Datecreated = DateTime.Now
-                    };
-
-                    var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
-
-                    if (result.Succeeded)
-                    {
-                        //await _signInManager.SignInAsync(user, false);
-                        var response = new
-                        {
-                            id = user.Id,
-                            //auth_token = await GenerateJwtToken(user.UserName, user),
-                            expires_in = 300,
-                            firstname = user.FirstName,
-                            lastname = user.LastName,
-                            email = user.Email,
-                            roles = user.Roles
-                        };
-
-                        var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                        return new OkObjectResult(json);
-                    }
-
-                    return Ok(user);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(email);
-        }
-
-        private async Task<object> GenerateJwtToken(string email, Users user)
-        {
-            var claims = new List<Claim>
+    private async Task<object> GenerateJwtToken(string email, Users user)
+    {
+      var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
+      var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+      var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
 
-            var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
+      var token = new JwtSecurityToken(
+          _configuration["JwtIssuer"],
+          _configuration["JwtIssuer"],
+          claims,
+          expires: expires,
+          signingCredentials: creds
+      );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+      return new JwtSecurityTokenHandler().WriteToken(token);
+    }
 
-        [HttpGet, Route("getTellerUsingIdentityById")]
-        public async Task<IActionResult> GetTellerUsingIdentityById([FromBody] string id)
+    [HttpGet, Route("getTellerUsingIdentityById")]
+    public async Task<IActionResult> GetTellerUsingIdentityById([FromBody] string id)
+    {
+      try
+      {
+        var teller = await _userManager.FindByIdAsync(id);
+
+        if (teller != null)
         {
-            try
-            {
-                var teller = await _userManager.FindByIdAsync(id);
-
-                if (teller != null)
-                {
-                    var user = new UserVO
-                    {
-                        email = teller.Email,
-                        firstname = teller.FirstName,
-                        lastname = teller.LastName,
-                        Identity = teller.Id,
-                        roles = teller.Roles
-                    };
-
-                    return Ok(user);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(id);
-        }
-
-        [HttpPost, Route("getTellerUsingAccountById")]
-        public async Task<IActionResult> GetTellerUsingAccountsById([FromBody] string id)
-        {
-            try
-            {
-                var teller = await _unitOfWork.Accounts.GetTellerByObjectId(id);
-
-                if (teller != null)
-                {
-                    var user = new Accounts
-                    {
-                        username = teller.username,
-                        firstname = teller.firstname,
-                        lastname = teller.lastname,
-                        Identity = teller.Identity,
-                        roles = teller.roles
-                    };
-
-                    return Ok(user);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(id);
-        }
-
-        [HttpPost, Route("getUserUsingAccountByEmail")]
-        public async Task<IActionResult> GetUserUsingAccountsByEmail([FromBody] string email)
-        {
-            try
-            {
-                var teller = await _unitOfWork.Accounts.GetTellerByEmail(email);
-
-                var user = new Accounts();
-
-                if (teller != null)
-                {
-                    user = new Accounts
-                    {
-                        username = teller.username,
-                        firstname = teller.firstname,
-                        lastname = teller.lastname,
-                        Identity = teller.Identity,
-                        roles = teller.roles
-                    };
-
-                    return Ok(user);
-                }
-
-                user = null;
-
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return BadRequest(email);
-        }
-
-        [HttpPost, Route("getUserUsingId")]
-        public async Task<IActionResult> GetUserUsingId([FromBody] string id)
-        {
-          try
+          var user = new UserVO
           {
-            var user = await _userManager.FindByIdAsync(id);
+            email = teller.Email,
+            firstname = teller.FirstName,
+            lastname = teller.LastName,
+            Identity = teller.Id,
+            roles = teller.Roles
+          };
 
-            if (user != null && user.isActive == true)
-            {
-              var loggedInUser = new UserVO
-              {
-                email = user.Email,
-                firstname = user.FirstName,
-                lastname = user.LastName,
-                Identity = user.Id,
-                isActive = user.isActive,
-                legacyId = user.legacyId,
-                roles = user.Roles,
-                userType = user.UserType
-              };
-
-              return Ok(loggedInUser);
-            }
-          }
-          catch (Exception ex)
-          {
-            _logger.LogInformation(ex.Message + ex.StackTrace);
-          }
-
-          return BadRequest(id);
+          return Ok(user);
         }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return BadRequest(id);
+    }
+
+    [HttpPost, Route("getTellerUsingAccountById")]
+    public async Task<IActionResult> GetTellerUsingAccountsById([FromBody] string id)
+    {
+      try
+      {
+        var teller = await _unitOfWork.Accounts.GetTellerByObjectId(id);
+
+        if (teller != null)
+        {
+          var user = new Accounts
+          {
+            username = teller.username,
+            firstname = teller.firstname,
+            lastname = teller.lastname,
+            Identity = teller.Identity,
+            roles = teller.roles
+          };
+
+          return Ok(user);
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return BadRequest(id);
+    }
+
+    [HttpPost, Route("getUserUsingAccountByEmail")]
+    public async Task<IActionResult> GetUserUsingAccountsByEmail([FromBody] string email)
+    {
+      try
+      {
+        var teller = await _unitOfWork.Accounts.GetTellerByEmail(email);
+
+        var user = new Accounts();
+
+        if (teller != null)
+        {
+          user = new Accounts
+          {
+            username = teller.username,
+            firstname = teller.firstname,
+            lastname = teller.lastname,
+            Identity = teller.Identity,
+            roles = teller.roles
+          };
+
+          return Ok(user);
+        }
+
+        user = null;
+
+        return Ok(user);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return BadRequest(email);
+    }
+
+    [HttpPost, Route("getUserUsingId")]
+    public async Task<IActionResult> GetUserUsingId([FromBody] string id)
+    {
+      try
+      {
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user != null && user.isActive == true)
+        {
+          var loggedInUser = new UserVO
+          {
+            email = user.Email,
+            firstname = user.FirstName,
+            lastname = user.LastName,
+            Identity = user.Id,
+            isActive = user.isActive,
+            legacyId = user.legacyId,
+            roles = user.Roles,
+            userType = user.UserType
+          };
+
+          return Ok(loggedInUser);
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogInformation(ex.Message + ex.StackTrace);
+      }
+
+      return BadRequest(id);
+    }
 
     public List<UserVO> turnUsersToUserVO(IEnumerable<Users> users)
+    {
+      var userVos = new List<UserVO>();
+
+      foreach (var user in users)
+      {
+        var userVo = new UserVO
         {
-            var userVos = new List<UserVO>();
+          email = user.Email,
+          firstname = user.FirstName,
+          lastname = user.LastName,
+          roles = user.Roles,
+          Identity = user.Id,
+          isActive = user.isActive,
+          userType = user.UserType,
+          legacyId = user.legacyId
+        };
+        userVos.Add(userVo);
+      }
 
-            foreach(var user in users)
-            {
-                var userVo = new UserVO
-                {
-                    email = user.Email,
-                    firstname = user.FirstName,
-                    lastname = user.LastName,
-                    roles = user.Roles,
-                    Identity = user.Id,
-                    isActive = user.isActive,
-                    userType = user.UserType,
-                    legacyId = user.legacyId
-                };
-                userVos.Add(userVo);
-            }
-
-            return userVos;
-        }
+      return userVos;
     }
+  }
 }
