@@ -14,7 +14,6 @@ export class RoleFacade{
         autorun(() => {
             this._generalService.getRoles()
                 .subscribe((data: Role[]) => {
-                    console.log(data);
                     this.roles = data;
                 });
         });

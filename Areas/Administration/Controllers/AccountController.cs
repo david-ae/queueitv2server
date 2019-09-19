@@ -122,86 +122,34 @@ namespace queueitv2.Areas.Administration.Controllers
 
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
-                if (result.Succeeded)
+                object response = null;
+
+                switch (result.Succeeded)
                 {
-                    if (user.isActive)
-                    {
+                  case true:
                         // Serialize and return the response
-                        var response = new
+                        response = new
                         {
-                            id = user.Id,
-                            auth_token = await GenerateJwtToken(user.UserName, user),
-                            expires_in = 300,
-                            firstname = user.FirstName,
-                            lastname = user.LastName,
-                            email = user.Email,
-                            roles = user.Roles,
-                            legacyId = user.legacyId,
-                            userType = user.UserType,
-                            isActive = user.isActive
+                          id = user.Id,
+                          auth_token = await GenerateJwtToken(user.UserName, user),
+                          expires_in = 300,
+                          authenticated = true
                         };
-
-                        var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                        return new OkObjectResult(json);
-                    }
-                    var response_inactive = new
-                    {
-                        isActive = user.isActive
-                    };
-                    var json_response_inactive = JsonConvert.SerializeObject(response_inactive, _serializerSettings);
-                    return new OkObjectResult(json_response_inactive);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-
-            return new BadRequestObjectResult(model);
-        }
-
-        [HttpPost, Route("loginasteller")]
-        public async Task<object> LoginAsTeller([FromBody]UserLoginApiModel model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                var user = await _userManager.FindByEmailAsync(model.Username);
-
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-                if (result.Succeeded)
-                {
-                    if (user.isActive)
-                    {
+                    break;
+                  case false:
                         // Serialize and return the response
-                        var response = new
+                        response = new
                         {
-                            id = user.Id,
-                            auth_token = await GenerateJwtToken(user.UserName, user),
-                            expires_in = 300,
-                            firstname = user.FirstName,
-                            lastname = user.LastName,
-                            email = user.Email,
-                            roles = user.Roles,
-                            legacyId = user.legacyId,
-                            userType = user.UserType,
-                            isActive = user.isActive
+                          id = "",
+                          auth_token = "",
+                          expires_in = 0,
+                          authenticated = false
                         };
+                    break;
+                }               
 
-                        var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                        return new OkObjectResult(json);
-                    }
-                    var response_inactive = new
-                    {
-                        isActive = user.isActive
-                    };
-                    var json_response_inactive = JsonConvert.SerializeObject(response_inactive, _serializerSettings);
-                    return new OkObjectResult(json_response_inactive);
-                }
+                var json = JsonConvert.SerializeObject(response, _serializerSettings);
+                return new OkObjectResult(json);
             }
             catch (Exception ex)
             {
@@ -648,9 +596,11 @@ namespace queueitv2.Areas.Administration.Controllers
             {
                 var teller = await _unitOfWork.Accounts.GetTellerByEmail(email);
 
+                var user = new Accounts();
+
                 if (teller != null)
                 {
-                    var user = new Accounts
+                    user = new Accounts
                     {
                         username = teller.username,
                         firstname = teller.firstname,
@@ -661,6 +611,10 @@ namespace queueitv2.Areas.Administration.Controllers
 
                     return Ok(user);
                 }
+
+                user = null;
+
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -670,7 +624,39 @@ namespace queueitv2.Areas.Administration.Controllers
             return BadRequest(email);
         }
 
-        public List<UserVO> turnUsersToUserVO(IEnumerable<Users> users)
+        [HttpPost, Route("getUserUsingId")]
+        public async Task<IActionResult> GetUserUsingId([FromBody] string id)
+        {
+          try
+          {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user != null && user.isActive == true)
+            {
+              var loggedInUser = new UserVO
+              {
+                email = user.Email,
+                firstname = user.FirstName,
+                lastname = user.LastName,
+                Identity = user.Id,
+                isActive = user.isActive,
+                legacyId = user.legacyId,
+                roles = user.Roles,
+                userType = user.UserType
+              };
+
+              return Ok(loggedInUser);
+            }
+          }
+          catch (Exception ex)
+          {
+            _logger.LogInformation(ex.Message + ex.StackTrace);
+          }
+
+          return BadRequest(id);
+        }
+
+    public List<UserVO> turnUsersToUserVO(IEnumerable<Users> users)
         {
             var userVos = new List<UserVO>();
 

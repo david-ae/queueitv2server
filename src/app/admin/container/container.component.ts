@@ -11,11 +11,10 @@ import * as $ from 'jquery';
   styleUrls: ['./container.component.css']
 })
 export class ContainerComponent implements OnInit{
-  con: boolean = false;
   constructor(public userAccess: UserAccess, private authService: AuthService,
     private _router: Router) { }
 
-  ngOnInit(){    
+  ngOnInit(){  
   }
 
   logout(){

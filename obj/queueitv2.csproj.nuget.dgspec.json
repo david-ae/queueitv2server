@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\david.edet\\source\\repos\\queueitv2\\queueitv2.csproj": {}
+    "C:\\inetpub\\wwwroot\\queueitv2\\queueitv2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\david.edet\\source\\repos\\queueitv2\\queueitv2.csproj": {
+    "C:\\inetpub\\wwwroot\\queueitv2\\queueitv2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\david.edet\\source\\repos\\queueitv2\\queueitv2.csproj",
+        "projectUniqueName": "C:\\inetpub\\wwwroot\\queueitv2\\queueitv2.csproj",
         "projectName": "queueitv2",
-        "projectPath": "C:\\Users\\david.edet\\source\\repos\\queueitv2\\queueitv2.csproj",
-        "packagesPath": "C:\\Users\\david.edet\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\david.edet\\source\\repos\\queueitv2\\obj\\",
+        "projectPath": "C:\\inetpub\\wwwroot\\queueitv2\\queueitv2.csproj",
+        "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
+        "outputPath": "C:\\inetpub\\wwwroot\\queueitv2\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\david.edet\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

@@ -12,6 +12,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { AlertService } from 'src/app/shared/_services';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Accounts } from 'src/app/valueobjects/accountvo';
+import { AuthResult } from '../apimodels/authresult';
+import { UserVO } from 'src/app/valueobjects/userVO';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +24,8 @@ export class LoginComponent implements OnInit {
 
   private _hubConnection: HubConnection;
   loginForm: FormGroup;
-  tellerLoginForm: FormGroup;
+  // tellerLoginForm: FormGroup;
+  roleSelectionForm: FormGroup;
   isRequesting: boolean;
   getNewUserProfileForm: FormGroup;
   isNotNull: boolean = false;
@@ -38,9 +41,12 @@ export class LoginComponent implements OnInit {
         username: new FormControl('', Validators.required),
         password: new FormControl('', Validators.required)
       });
-      this.tellerLoginForm = new FormGroup({
-        username: new FormControl('', Validators.required),
-        password: new FormControl('', Validators.required)
+      // this.tellerLoginForm = new FormGroup({
+      //   username: new FormControl('', Validators.required),
+      //   password: new FormControl('', Validators.required)
+      // });
+      this.roleSelectionForm = new FormGroup({
+
       });
       this.getNewUserProfileForm = new FormGroup({
         email: new FormControl('', Validators.required)
@@ -48,66 +54,19 @@ export class LoginComponent implements OnInit {
     }
   
   ngOnInit() {     
-    this.userAccess.auth = false;  
     this._authService.logout();
   }
 
-  // goToAdministration(){
-  //   this._router.navigate(['admin']);
-  //   this.fileInputCloseModal.nativeElement.click();
-  // }
-
-  // goToOperations(){
-  //   this._router.navigate(['operations']);
-  //   this.fileInputCloseModal.nativeElement.click();
-  // }
-
-  tellerLogin(){    
-    this.fileInputOpenModal.nativeElement.click();
+  goToAdministration(){
+    this._router.navigate(['admin']);
+    this.userAccess.auth = true;
+    this.fileInputCloseModal.nativeElement.click();
   }
 
- async loginAsTeller(){
-    this.spinner.show();
-    let model = new UserLoginApiModel();
-    model.Username = this.tellerLoginForm.get('username').value;
-    model.Password = this.tellerLoginForm.get('password').value;
-
-    await this._authService.loginAsTeller(model)
-      .subscribe((data) => {
-        if(data){
-          this.spinner.hide();
-          this.userAccess.user.isActive = data.isActive;
-          if(this.userAccess.user.isActive){
-            this.userAccess.user.identity = data.id;
-            this.userAccess.user.email = data.email;
-            this.userAccess.user.firstname = data.firstname;
-            this.userAccess.user.lastname = data.lastname;
-            this.userAccess.user.roles = data.roles;
-            this._authService.setSession(data);
-            /**use the user role to determine
-             * what page to navigate to
-             */
-              let route:string = this.userAccess.accessibleRoute(this.userAccess.user.roles[0]);              
-              this.userAccess.auth = true;
-              this._router.navigate([route]);      
-              this.fileInputCloseModal.nativeElement.click();  
-          }
-          else{
-            this.alertService.error("Oops! Your account has been deactivated. Contact the Operations Department.");
-          } 
-        }                 
-      },
-      (err: HttpErrorResponse) => {
-        this.spinner.hide();
-        this.alertService.error("Oops! Login details are wrong. You need to remember them.");
-      }
-    );
-    
-    this._operationsService.getTodaysTransactions()
-    .subscribe((data: QueueITTransaction[]) => {
-      
-    });
-
+  goToOperations(){
+    this._router.navigate(['operations']);
+    this.userAccess.auth = true;
+    this.fileInputCloseModal.nativeElement.click();
   }
 
   async login(){    
@@ -117,41 +76,57 @@ export class LoginComponent implements OnInit {
     model.Password = this.loginForm.get('password').value;
 
     await this._authService.login(model)
-      .subscribe((data) => {
-        if(data){
+      .subscribe((data:AuthResult) => {
+        if(data.authenticated){  
+            this.setUserData(data);
+            this.spinner.hide();
+        }
+        else{
           this.spinner.hide();
-          this.userAccess.user.isActive = data.isActive;
-          if(this.userAccess.user.isActive){
-            this.userAccess.user.identity = data.id;
-            this.userAccess.user.email = data.email;
-            this.userAccess.user.firstname = data.firstname;
-            this.userAccess.user.lastname = data.lastname;
-            this.userAccess.user.roles = data.roles;
-            this._authService.setSession(data);
-            /**use the user role to determine
-             * what page to navigate to
-             */
-              let route:string = this.userAccess.accessibleRoute(this.userAccess.user.roles[0]);
-              console.log(route);
-              this.userAccess.auth = true;
-              this._router.navigate([route]);        
-          }
-          else{
-            this.alertService.error("Oops! Your account has been deactivated. Contact the Operations Department.");
-          } 
-        }                 
+          this.alertService.error("Oops! Login details are wrong. You need to remember them.");
+        }                                
       },
       (err: HttpErrorResponse) => {
         this.spinner.hide();
-        this.alertService.error("Oops! Login details are wrong. You need to remember them.");
+        this.alertService.error("Oops! Something went wrong. Please try again.");
       }
-    );
+    );   
     
     this._operationsService.getTodaysTransactions()
     .subscribe((data: QueueITTransaction[]) => {
       
     });
     
+  }
+
+  async setUserData(response: AuthResult){
+    await this._authService.getUserUsingId(response.id)
+      .subscribe((userdetails: UserVO) => {
+        if(userdetails.isActive){                    
+          this.spinner.hide(); 
+          this.userAccess.user.identity = userdetails.identity;
+          this.userAccess.user.email = userdetails.email;
+          this.userAccess.user.firstname = userdetails.firstname;
+          this.userAccess.user.lastname = userdetails.lastname;
+          this.userAccess.user.roles = userdetails.roles;
+          this._authService.setSession(response);
+          /**use the user role to determine
+           * what page to navigate to
+           */
+          let noOfRolesCheckResult = this.userAccess.isHasMoreThanOneRole(this.userAccess.user.roles);
+          if(noOfRolesCheckResult){
+            this.fileInputOpenModal.nativeElement.click();
+          }
+          else{
+            this.userAccess.auth = true;
+            let route:string = this.userAccess.accessibleRoute(this.userAccess.user.roles[0]);
+            this._router.navigate([route]);
+          }          
+        }
+        else{
+          this.alertService.error("Oops! Your account has been deactivated. Contact the Operations Department.");
+        } 
+    });
   }
 
   getNewUserProfile(){

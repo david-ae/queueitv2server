@@ -24,14 +24,9 @@
               "src/manifest.json"
             ],
             "styles": [
-              "./src/assets/dist/css/adminx.css"
+              
             ],
             "scripts": [
-              "./src/assets/dist/js/jquery-3.2.1.min.js",
-              "./src/assets/dist/js/popper.min.js",
-              "./src/assets/dist/js/bootstrap.min.js",
-              "./src/assets/dist/js/vendor.js",
-              "./src/assets/dist/js/adminx.js"
             ]
           },
           "configurations": {
@@ -81,9 +76,10 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "./src/assets/dist/css/adminx.css"
+              
             ],
-            "scripts": [],
+            "scripts": [
+            ],
             "assets": [
               "src/assets/images/fav.png",
               "src/assets",

@@ -30,6 +30,11 @@ export class AuthService {
         .pipe(delay(100), catchError(this.handleError));
   }
 
+  getUserUsingId(id: string){
+    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingId", JSON.stringify(id), this.httpOptions)
+        .pipe(delay(100), catchError(this.handleError));
+  }
+
   loginAsTeller(model: UserLoginApiModel){
     return this._http.post<UserLoginApiModel>(this._configuration.ServerAdminWithApiAccountUrl + "loginasteller", JSON.stringify(model), this.httpOptions)
         .pipe(delay(100), catchError(this.handleError));

@@ -39,11 +39,11 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Identity.MongoDB">
-      <HintPath>..\..\..\Documents\Products\aspnetcore-identity-mongodb\src\Microsoft.AspNetCore.Identity.MongoDB\bin\Debug\netstandard2.0\Microsoft.AspNetCore.Identity.MongoDB.dll</HintPath>
+      <HintPath>..\..\..\270916\aspnetcore-identity-mongodb\src\Microsoft.AspNetCore.Identity.MongoDB\obj\Debug\netstandard2.0\Microsoft.AspNetCore.Identity.MongoDB.dll</HintPath>
     </Reference>
   </ItemGroup>
   
-  <!--<Target Name="AngularBuild" AfterTargets="Build">
+  <Target Name="AngularBuild" AfterTargets="Build">
     <Exec Command="npm run build" />
-  </Target>-->
+  </Target>
 </Project>

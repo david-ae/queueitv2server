@@ -165,7 +165,6 @@ export class OperationsFacade{
                 }
             })            
         });
-        console.log(this.tellerTransactions.length);
 
         return this.tellerTransactions;
     }

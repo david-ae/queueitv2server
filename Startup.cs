@@ -97,10 +97,10 @@ namespace queueitv2
                 .AllowCredentials()                
             );
 
-            //app.UseDefaultFiles();
-            //app.UseStaticFiles();
+      app.UseDefaultFiles();
+      app.UseStaticFiles();
 
-            app.UseSignalR(routes =>
+      app.UseSignalR(routes =>
             {
                 routes.MapHub<MessageHub>("/message");
                 routes.MapHub<TransactionHub>("/transactions");

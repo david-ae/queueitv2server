@@ -1,6 +1,4 @@
-<div *mobxAutorun class="adminx-container d-flex justify-content-center align-items-center" style="padding: 0.5rem;">    
-    <div class="page-login">
-        <ngx-spinner 
+<ngx-spinner 
         bdOpacity = 0.9
         bdColor = "rgba(182,217,216,0.42)"
         size = "medium"
@@ -8,9 +6,11 @@
         type = "ball-running-dots"
         [fullScreen] = "true">
     </ngx-spinner> 
+<div class="adminx-container" style="padding: 0.5rem;">    
+    <div class="page-login" style="max-width: 35rem; margin: auto; ">        
         <alert></alert>
       <div class="text-center">
-        <a class="navbar-brand mb-4 h1" [routerLink]="['/auth/login']">
+        <a class="navbar-brand mb-4 h1" [routerLink]="['/admin/login']">
           <img class="navbar-brand-image d-inline-block align-top mr-2" src="./../../../assets/images/cbs-signature[15928]-new.png" alt="greatplacetowork">
         </a>
         <hr/>
