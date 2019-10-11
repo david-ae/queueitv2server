@@ -1140,7 +1140,6 @@ var LoginComponent = /** @class */ (function () {
                                 }
                             }, function (err) {
                                 _this.spinner.hide();
-                                console.log("Error: " + err);
                                 _this.alertService.error("Oops! Something went wrong. Please try again.");
                             })];
                     case 1:
@@ -3267,8 +3266,8 @@ __webpack_require__.r(__webpack_exports__);
 var Configuration = /** @class */ (function () {
     function Configuration() {
         this.ApiServer = "http://localhost:5000/";
-        //public ApiServerSSL: string = "https://localhost:5001/";
-        this.ApiServerSSL = "http://queueit.autoreglive.com/";
+        this.ApiServerSSL = "https://localhost:5001/";
+        //public ApiServerSSL: string = "http://queueit.autoreglive.com/";
         //public ApiServerSSL: string = "http://localhost:56242/";
         //public ApiServerSSL: string = "https://localhost:44328/";
         this.ApiAdminUrlAccount = "api/administration/account/";
@@ -7250,7 +7249,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\inetpub\wwwroot\queueitv2\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! C:\Users\david.edet\source\repos\queueitv2\src\main.ts */"./src/main.ts");
 
 
 /***/ })

@@ -18,7 +18,7 @@ import { OperationsFacade } from 'src/app/services/operations/operationsfacade';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { AlertService } from 'src/app/shared/_services';
-import { UserAccess } from 'src/app/services/authentication/usersAccess';
+import { UserAccess } from './../../services/authentication/usersAccess';
 
 export class Item{
   name:string;
@@ -197,7 +197,6 @@ export class JobComponent implements OnInit {
   }
 
   turnToUserVO(user: Accounts): UserVO{
-    console.log(user);
     let _user = new UserVO();
     _user.firstname = user.firstname;
     _user.lastname = user.lastname;

@@ -46,7 +46,7 @@
                             <label class="form-label" for="validationCustom01">Assign to a Teller</label>
                             <select class="form-control" formControlName="tellerid">
                                     <option value="0" disabled selected>--Select Teller--</option>
-                                <option *ngFor="let seniorteller of operationsFacade.getSeniorTellerList" [value]="seniorteller.identity">{{seniorteller.firstname}}&nbsp;&nbsp;{{seniorteller.lastname}}</option>
+                                <option *ngFor="let seniorteller of operationsFacade.getSeniorTellerUserVOList" [value]="seniorteller.identity">{{seniorteller.firstname}}&nbsp;&nbsp;{{seniorteller.lastname}}</option>
                             </select>
                         </div>
                     </div>

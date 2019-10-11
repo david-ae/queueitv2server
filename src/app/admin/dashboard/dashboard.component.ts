@@ -45,28 +45,33 @@ export class DashboardComponent implements OnInit {
       this.reportFacade.sortTransactionsBeingProcessed(this.operationsFacade.transactions);
       this.reportFacade.sortSubmittedTransactions(this.operationsFacade.transactions);
       this.reportFacade.sortReturnedTransactions(this.operationsFacade.transactions);     
+      this.reportFacade.prepareSubmittedTransactionActivity(this.operationsFacade.transactions);
+      this.reportFacade.prepareProcessingTransactionActivity(this.operationsFacade.transactions);
+      this.reportFacade.prepareAwaitingMailTransactionActivity(this.operationsFacade.transactions);
+
     });
 
     this._hubConnection.start().then(() => console.log("connected"));
   }
 
-  ngOnInit() {    
-    this.reportFacade.prepareSubmittedTransactionActiviity(this.operationsFacade.transactions);
+  ngOnInit() {        
     this.startSignalRConnection();
+    this.reportFacade.prepareSubmittedTransactionActivity(this.operationsFacade.transactions);
+    this.transactionStatus = "Submitted";
   }
 
   tellerSubmittedTransaction(){
-    this.reportFacade.prepareSubmittedTransactionActiviity(this.operationsFacade.transactions);
+    this.reportFacade.prepareSubmittedTransactionActivity(this.operationsFacade.transactions);
     this.transactionStatus = "Submitted";
   }
 
   tellerProcessingTransactions(){
-    this.reportFacade.prepareProcessingTransactionActiviity(this.operationsFacade.transactions);
+    this.reportFacade.prepareProcessingTransactionActivity(this.operationsFacade.transactions);
     this.transactionStatus = "Processing";
   }
 
   tellerAwaitingMailTransactions(){
-    this.reportFacade.prepareAwaitingMailTransactionActiviity(this.operationsFacade.transactions);
+    this.reportFacade.prepareAwaitingMailTransactionActivity(this.operationsFacade.transactions);
     this.transactionStatus = "Awaiting Mail";
   }
 

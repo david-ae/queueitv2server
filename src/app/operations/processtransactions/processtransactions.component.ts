@@ -47,7 +47,6 @@ export class ProcesstransactionsComponent implements OnInit {
     
     this._hubConnection.on('GetTodayTransactions', data => {      
       this.operationsFacade.transactions = data;
-      console.log(this.operationsFacade.transactions);
       this.operationsFacade.assignedTransactions(this.userAccess.user.identity, 
                   this.operationsFacade.transactions);
     });    
@@ -93,9 +92,8 @@ export class ProcesstransactionsComponent implements OnInit {
 
     let tellerid = this.processTransactionForm.get("tellerid").value;
 
-    let teller = this.operationsFacade.getTransactionalTellerById(tellerid);
-    let tellerUserVo = this.turnToUserVO(teller);
-    this.operationsFacade.transaction.treatedBy.push(tellerUserVo);
+    let teller = this.operationsFacade.getTellerUserVOById(tellerid);
+    this.operationsFacade.transaction.treatedBy.push(teller);
     this.operationsFacade.transaction.status = "Processing";
     
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
@@ -151,6 +149,7 @@ export class ProcesstransactionsComponent implements OnInit {
   }
 
   turnToUserVO(user: Accounts): UserVO{
+
     let _user = new UserVO();
     _user.firstname = user.firstname;
     _user.lastname = user.lastname;

@@ -166,16 +166,16 @@ export class ReportFacade{
         return this.transactionsBreakdownList;
     }
 
-    prepareSubmittedTransactionActiviity(transactions: QueueITTransaction[]){
+    @action prepareSubmittedTransactionActivity(transactions: QueueITTransaction[]){
         this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "SUBMITTED"){
                 let activity = new TellerTransactionActivity();
                 activity.tellerFullName = transaction.createdBy.firstname + " " + transaction.createdBy.lastname;
+                activity.platenumber = transaction.platenumber;
                 activity.count++;
                 activity.status = transaction.status;
-                activity.amountProcessed += transaction.amount;
-                console.log(transaction);
+                activity.amountProcessed = transaction.amount;
                 this.transactionsBreakdownList.push(activity);
             }
         });
@@ -185,7 +185,7 @@ export class ReportFacade{
         return this.processingTransactionsBreakdownList;
     }
 
-    prepareProcessingTransactionActiviity(transactions: QueueITTransaction[]){
+    @action prepareProcessingTransactionActivity(transactions: QueueITTransaction[]){
         this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "PROCESSING"){                
@@ -209,7 +209,7 @@ export class ReportFacade{
         return this.awaitingMailTransactionsBreakdownList;
     }
 
-    prepareAwaitingMailTransactionActiviity(transactions: QueueITTransaction[]){
+    @action prepareAwaitingMailTransactionActivity(transactions: QueueITTransaction[]){
         this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "AWAITING-MAIL"){                
@@ -227,6 +227,15 @@ export class ReportFacade{
                 });                
             }
         });
+    }
+
+    checkIfUserExists(tellerId:  string, breakdownList: TellerTransactionActivity[]){
+        let user = breakdownList.filter(b => b.tellerId == tellerId);
+        if(user != null){
+            return true;
+        }
+
+        return false;
     }
     //#endregion
 }

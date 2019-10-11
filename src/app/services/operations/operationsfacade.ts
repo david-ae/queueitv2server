@@ -58,7 +58,7 @@ export class OperationsFacade{
         return this.seniorTellers;
     }
 
-    @computed get getTellerUserrVOList(){
+    @computed get getTellerUserVOList(){
         return this.tellersUserVO;
     }
 

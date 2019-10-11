@@ -3,7 +3,7 @@ export class UserVO{
     lastname: string;
     firstname: string;
     email: string;
-    identity: any;
+    identity: string;
     userType: string;
     legacyId: string;
     isActive: boolean;

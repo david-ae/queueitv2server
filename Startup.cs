@@ -97,8 +97,8 @@ namespace queueitv2
                 .AllowCredentials()                
             );
 
-      app.UseDefaultFiles();
-      app.UseStaticFiles();
+      //app.UseDefaultFiles();
+      //app.UseStaticFiles();
 
       app.UseSignalR(routes =>
             {

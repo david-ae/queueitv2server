@@ -1,6 +1,7 @@
 export class TellerTransactionActivity{
     tellerId: string;
     tellerFullName: string;
+    platenumber: string;
     status: string;
     count: number;
     amountProcessed: number;

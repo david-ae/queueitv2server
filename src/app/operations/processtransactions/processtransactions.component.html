@@ -101,7 +101,7 @@
                                 <td>
                                     <select class="form-control" formControlName="tellerid">
                                             <option value="" disabled selected>--Select Teller--</option>
-                                        <option *ngFor="let teller of operationsFacade.transactionalTellers" [value]="teller.identity">{{teller.firstname}}&nbsp;&nbsp;{{teller.lastname}}</option>
+                                        <option *ngFor="let teller of operationsFacade.getTellerUserVOList" [value]="teller.identity">{{teller.firstname}}&nbsp;&nbsp;{{teller.lastname}}</option>
                                     </select>
                                 </td>
                                 <td *ngIf="transaction.status == 'Submitted' ? true : transaction.status == 'Awaiting-Mail' ? true: false;">

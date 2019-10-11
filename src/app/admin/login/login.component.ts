@@ -7,7 +7,7 @@ import { QueueITTransaction } from 'src/app/domainmodel/queueittransaction';
 import { AuthService } from '../services/auth.service';
 import { UserLoginApiModel } from '../apimodels/userloginapimodel';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { UserAccess } from './../services/userAccess';
+import { UserAccess } from './../../services/authentication/usersAccess';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AlertService } from 'src/app/shared/_services';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -104,6 +104,7 @@ export class LoginComponent implements OnInit {
       .subscribe((userdetails: UserVO) => {
         if(userdetails.isActive){                    
           this.spinner.hide(); 
+          console.log(userdetails);
           this.userAccess.user.identity = userdetails.identity;
           this.userAccess.user.email = userdetails.email;
           this.userAccess.user.firstname = userdetails.firstname;
