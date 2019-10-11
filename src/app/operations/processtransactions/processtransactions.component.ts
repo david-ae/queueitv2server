@@ -69,40 +69,50 @@ export class ProcesstransactionsComponent implements OnInit {
     this.startSignalRConnection();
   }
 
-  assignTransactionToColleague(){
+  allocate(){
     this.spinner.show();
     let tellerid = this.assignToColleagueForm.get("tellerid").value;
 
     let teller = this.operationsFacade.getSeniorTellerById(tellerid);
-    this.operationsFacade.transaction.treatedBy.push(teller);
-    this._transactionService.updateTransaction(this.operationsFacade.transaction)
-        .subscribe(() => {
-          this.spinner.hide();
-        },
-        (err: HttpErrorResponse) => {
-          this.spinner.hide();
-            console.log("Error: " + err);
-            this.alertService.error("Unable to Assign Transaction to Colleague. Please try again.")
-        }
-        );
-  }
-
-  assignTransaction(){
-    this.spinner.show();
-
-    let tellerid = this.processTransactionForm.get("tellerid").value;
-
-    let teller = this.operationsFacade.getTellerUserVOById(tellerid);
-    this.operationsFacade.transaction.treatedBy.push(teller);
-    this.operationsFacade.transaction.status = "Processing";
+    let result = this.operationsFacade.checkIfTellerExistAlready(this.operationsFacade.transaction, teller);
+    if(!result){
+      this.operationsFacade.transaction.treatedBy.push(teller);
+    }
     
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(() => {
           this.spinner.hide();
+          this.alertService.success("Transaction allocated to " + teller.firstname + " " + teller.lastname);
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
-            console.log("Error: " + err);
+            this.alertService.error("Unable to Assign Transaction to Colleague. Please try again.");
+        }
+        );
+  }
+
+  assignTransaction(transactionid: string){
+    this.spinner.show();
+
+    this.operationsFacade.transaction = this.operationsFacade.getTransaction(transactionid);
+
+    let tellerid = this.processTransactionForm.get("tellerid").value;
+
+    let teller = this.operationsFacade.getTellerById(tellerid);
+    let result = this.operationsFacade.checkIfTellerExistAlready(this.operationsFacade.transaction, teller);
+
+    if(!result){
+      this.operationsFacade.transaction.treatedBy.push(teller);
+    }    
+    
+    this.operationsFacade.transaction.status = "Processing";
+    this._transactionService.updateTransaction(this.operationsFacade.transaction)
+        .subscribe(() => {
+          this.spinner.hide();
+          this.alertService.success("Transaction assigned to " + teller.firstname + " " + teller.lastname);
+        },
+        (err: HttpErrorResponse) => {
+          this.spinner.hide();
             this.alertService.error("Unable to Assign Transaction. Please try again.")
         }
       );
@@ -119,6 +129,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(()=> {
           this.spinner.hide();
+          this.alertService.success("Transaction flagged! ");
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
@@ -139,6 +150,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(()=> {
           this.spinner.hide();
+          this.alertService.success("Transaction rejected!");
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();

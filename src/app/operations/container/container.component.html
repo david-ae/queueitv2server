@@ -35,13 +35,11 @@
                       </a>
                 </li>
                 <!-- Notifications -->
-                <li class="nav-item dropdown">
+                <li *ngIf="!userAccess.isTransactionalTeller || !userAccess.isTeller" class="nav-item dropdown">
                 <a class="nav-link avatar-with-name" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">
                     <img src="./../../../assets/images/user2.png" class="d-inline-block align-top" alt="">
                 </a>
-                <div *ngIf="!userAccess.isTransactionalTeller || !userAccess.isTeller" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" [routerLink]="['/admin/login']" href="#">Login as Administrator</a>
-                        <div class="dropdown-divider"></div>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <button type="button" class="dropdown-item text-danger" (click)="logout()">Log Out</button>
                 </div>
                 </li>

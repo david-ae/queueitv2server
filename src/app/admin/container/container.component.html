@@ -1,7 +1,7 @@
 <!-- Start Header Top Area -->
 <div class="adminx-container">
     <nav class="navbar navbar-expand justify-content-between fixed-top">
-        <a class="navbar-brand mb-0 h1 d-none d-md-block" href="index.html">
+        <a class="navbar-brand mb-0 h1 d-none d-md-block" href="#">
             <img src="./../../../assets/images/fav.png" class="navbar-brand-image d-inline-block align-top mr-2" alt="">
             QueueIT
         </a>
@@ -14,14 +14,12 @@
             </a>
         </div>
 
-        <ul class="navbar-nav d-flex justify-content-end mr-2">
+        <ul *ngIf="userAccess.auth" class="navbar-nav d-flex justify-content-end mr-2">
           <li class="nav-item dropdown">
             <a class="nav-link avatar-with-name" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">
               <img src="./../../../assets/images/user2.png" class="d-inline-block align-top" alt="">
             </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-              <a *ngIf="userAccess.auth" class="dropdown-item" [routerLink]="['/operations/login']" href="#">Login as Teller</a>
-              <div class="dropdown-divider"></div>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">              
               <button type="button" class="dropdown-item text-danger" (click)="logout()">Log Out</button>
             </div>
           </li>

@@ -18,12 +18,12 @@
                         </p>
                         <select name="teller" formControlName="tellerid" class="form-control" required>
                             <option value="" disabled selected>--Select Colleague--</option>
-                            <option *ngFor="let seniorteller of operationsFacade.getSeniorTellerList" [value]="seniorteller.identity">{{seniorteller.firstname}}&nbsp;&nbsp;{{seniorteller.lastname}}</option>
+                            <option *ngFor="let seniorteller of operationsFacade.getSeniorTellerUserVOList" [value]="seniorteller.identity">{{seniorteller.firstname}}&nbsp;&nbsp;{{seniorteller.lastname}}</option>
                         </select>
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="assignTransactionToColleague()">Assign Transaction</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="allocate()">Assign Transaction</button>
                     </div>
                 </div>
                 </div>
@@ -61,31 +61,29 @@
                     <table class="table table-sc-ex">
                         <thead>
                             <tr>
-                                <!-- <th>S/N</th> -->
+                                <th>S/N</th>
                                 <th>Customer</th>
                                 <th>Trans. Type</th>
                                 <th>Reg. No.</th>
                                 <th>Amount</th>                                                
                                 <th>Status</th>
                                 <th>As At</th>
-                                <th>Select a Teller to AssignTo</th>
+                                <th>Select a Teller</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let transaction of operationsFacade.tellerTransactions | transaction: searchText | paginate: { itemsPerPage: 5, currentPage: p }; let i = index;"  class="active">
-                                <!-- <td>{{i + 1}}</td> -->
+                                <td>{{i + 1}}</td>
                                 <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
                                 <td>{{transaction.transactionType}}</td>
                                 <td>{{transaction.platenumber}}</td>
                                 <td>{{transaction.amount}}</td>                                                
                                 <td>{{transaction.status}}</td>
-                                <td *ngIf="transaction.status == 'Submitted'">{{transaction.timeSubmitted | date:' h:mma'}}</td>
-                                <td *ngIf="transaction.status == 'Completed'">{{transaction.timeCompleted | date:' h:mma'}}</td>
-                                <td *ngIf="transaction.status == 'Processing'">{{transaction.datecreated | date:' h:mma'}}</td>
+                                <td *ngIf="transaction.status == 'Submitted'"><em>{{transaction.timeSubmitted | date:' h:mma'}}</em></td>
+                                <td *ngIf="transaction.status == 'Completed'"><em>{{transaction.timeCompleted | date:' h:mma'}}</em></td>
+                                <td *ngIf="transaction.status == 'Processing'"><em>{{transaction.datecreated | date:' h:mma'}}</em></td>
                                 <td *ngIf="transaction.status == 'Issue'" >
-                                    <em *ngFor="let time of transaction.timeIssueFlagged">
-                                            {{time | date:' h:mma'}}
-                                    </em>                                    
+                                    <em>{{transaction.timeIssueFlagged | date:' h:mma'}}</em>                                    
                                 </td>
                                 <td *ngIf="transaction.status == 'Rejected'">
                                     <table class="innertbl">
@@ -99,7 +97,7 @@
                                     </table>
                                 </td>                                                
                                 <td>
-                                    <select class="form-control" formControlName="tellerid">
+                                    <select style="width: 10em;" class="form-control" formControlName="tellerid">
                                             <option value="" disabled selected>--Select Teller--</option>
                                         <option *ngFor="let teller of operationsFacade.getTellerUserVOList" [value]="teller.identity">{{teller.firstname}}&nbsp;&nbsp;{{teller.lastname}}</option>
                                     </select>
@@ -111,7 +109,7 @@
                                     <input type="button" [disabled] = "!processTransactionForm.valid" class="btn btn-outline-info btn-yellow" value="Assign" (click)="assignTransaction(transaction.id)" />
                                 </td>
                                 <td *ngIf="transaction.status == 'Submitted' ? true : transaction.status == 'Issue' ? true : transaction.status == 'Awaiting-Mail' ? true: false;">
-                                    <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" (click)="selectedTransaction(transaction.id)">Assign to Colleague</button>
+                                    <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" (click)="selectedTransaction(transaction.id)">Allocate</button>
                                 </td>
                                 <td *ngIf="transaction.status != 'Rejected' ? true : false">
                                     <button type="button" class="btn btn-danger" (click)="rejectTransaction(transaction.id)">Reject</button>

@@ -102,6 +102,15 @@ export class OperationsFacade{
         return _teller;
     }
 
+    checkIfTellerExistAlready(transaction: QueueITTransaction, teller: UserVO): boolean{
+        let _teller = transaction.treatedBy.filter(t => t.identity == teller.identity);
+        if(_teller != null){
+            return true;
+        }
+
+        return false;
+    }
+
     @computed get getAccountsUserVOEquivalent(){
         return this.tellersUserVO;
     }
@@ -158,9 +167,10 @@ export class OperationsFacade{
 
     @action assignedTransactions(id: string, transactions: QueueITTransaction[]): QueueITTransaction[]{
         this.tellerTransactions = [];
-        transactions.forEach(transaction => {
+        transactions.forEach(transaction => {            
             transaction.treatedBy.forEach(teller => {
-                if(teller.identity == id && transaction.status == "Submitted"){
+                if(teller.identity == id && (transaction.status == "Submitted" 
+                || transaction.status == "Issue" || transaction.status == "Processing")){
                     this.tellerTransactions.push(transaction);
                 }
             })            

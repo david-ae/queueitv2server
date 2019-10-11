@@ -37,7 +37,7 @@ export class TransactiontypeComponent implements OnInit {
     this._generalService.addTransactionType(name)
         .subscribe((data: TransactionType) => {
           this.spinner.hide();
-            this.transactionTypeFacade.transactiontypes = [...this.transactionTypeFacade.transactiontypes, data];
+            this.transactionTypeFacade.transactiontypes.push(data);
             this.alertService.success(name.toUpperCase() + " Successfully Added as a TransactionType.");
         },
         (err: HttpErrorResponse) => {

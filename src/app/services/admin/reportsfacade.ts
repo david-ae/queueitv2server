@@ -195,6 +195,7 @@ export class ReportFacade{
                             let activity = new TellerTransactionActivity();
                             activity.tellerFullName = teller.firstname + " " + teller.lastname;
                             activity.count++;
+                            activity.platenumber = transaction.platenumber;
                             activity.status = transaction.status;
                             activity.amountProcessed += transaction.amount;
                             this.transactionsBreakdownList.push(activity);
@@ -219,6 +220,7 @@ export class ReportFacade{
                             let activity = new TellerTransactionActivity();
                             activity.tellerFullName = teller.firstname + " " + teller.lastname;
                             activity.count++;
+                            activity.platenumber = transaction.platenumber;
                             activity.status = transaction.status;
                             activity.amountProcessed += transaction.amount;
                             this.transactionsBreakdownList.push(activity);

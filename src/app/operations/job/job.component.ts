@@ -139,7 +139,6 @@ export class JobComponent implements OnInit {
     },
       (err: HttpErrorResponse) => {
         this.spinner.hide();
-          console.log("Error: " + err);
           this.alertService.error("Unable to Add New Transaction. Please try again.")
       }
     );    
@@ -189,7 +188,6 @@ export class JobComponent implements OnInit {
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
-            console.log("Error: " + err);
             this.alertService.error("Transaction Update Failed. Please try again")
         }
       );

@@ -1,8 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import { UserAccess } from './../services/userAccess';
+import { UserAccess } from './../../services/authentication/usersAccess';
 import { AuthService } from 'src/app/admin/services/auth.service';
 import { Router } from '@angular/router';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-container',
@@ -20,6 +19,7 @@ export class ContainerComponent implements OnInit{
   logout(){
     this.authService.logout();
     this.userAccess.auth = false;
+    this.userAccess.isAdmin = false;
     this._router.navigate(['admin/login']);
   }
 }

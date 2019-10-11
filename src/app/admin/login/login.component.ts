@@ -104,7 +104,6 @@ export class LoginComponent implements OnInit {
       .subscribe((userdetails: UserVO) => {
         if(userdetails.isActive){                    
           this.spinner.hide(); 
-          console.log(userdetails);
           this.userAccess.user.identity = userdetails.identity;
           this.userAccess.user.email = userdetails.email;
           this.userAccess.user.firstname = userdetails.firstname;
@@ -159,7 +158,6 @@ export class LoginComponent implements OnInit {
           this.userAccess.user.email = data.username;
           this.userAccess.user.roles = data.roles;
           this.isNotNull = true;
-          console.log(this.userAccess.user);
           this.getNewUserProfileForm.setValue({
             email: this.userAccess.user.email
           });

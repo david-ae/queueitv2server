@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserAccess } from './../../admin/services/userAccess';
+import { UserAccess } from './../../services/authentication/usersAccess';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
@@ -21,6 +21,9 @@ export class ContainerComponent implements OnInit {
   logout(){
     this.authService.logout();
     this.userAccess.auth = false;
+    this.userAccess.isSeniorTeller = false;
+    this.userAccess.isTeller = false;
+    this.userAccess.isTransactionalTeller = false;
     this._router.navigate(['admin/login']);
   }
 

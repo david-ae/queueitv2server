@@ -29,19 +29,19 @@ export class UserAccess{
     }
     
     @action accessibleRoute(role: string): string{
-        if(role == "ADMIN"){
+        if(role === "ADMIN"){
             this.isAdmin = true;
             return 'admin/dashboard';
         }
-        else if(role == "SENIOR TELLER"){
+        else if(role === "SENIOR TELLER"){
             this.isSeniorTeller = true;
             return "operations/process-transactions";
         }
-        else if( role == "TELLER"){
+        else if( role === "TELLER"){
             this.isTeller = true;
             return "operations/process-jobs";
         }
-        else if( role == "TRANSACTIONAL TELLER"){
+        else if( role === "TRANSACTIONAL TELLER"){
             this.isTransactionalTeller = true;
             return "operations/process-jobs";
         }
