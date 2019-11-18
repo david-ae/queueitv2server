@@ -14,18 +14,22 @@ export class TellerService {
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
-        'Authorization': ''
+        'Authorization': 'Bearer ' + localStorage.getItem('id_token')
       })
     };
   }
 
   getTellerById(tellerId: any){
-    return this._httpclient.post(this._configuration.ServerAdminWithApiAccountUrl + "getTellerUsingAccountById", JSON.stringify(tellerId), this.httpOptions)
-      .pipe(catchError(this.handleError));
+    return this._httpclient.get(this._configuration.ServerAdminWithApiAccountUrl + "getTellerUsingAccountById",
+     { params: {
+         id: JSON.stringify(tellerId)
+       },
+       headers: this.httpOptions
+     }).pipe(catchError(this.handleError));
   }
 
   getTellerByEmail(email: string){
-    return this._httpclient.post(this._configuration.ServerAdminWithApiAccountUrl + "getTellerUsingAccountByEmail", JSON.stringify(email), this.httpOptions)
+    return this._httpclient.get(this._configuration.ServerAdminWithApiAccountUrl + "getTellerUsingAccountByEmail"+ JSON.stringify(email), this.httpOptions)
       .pipe(catchError(this.handleError));
   }
 

@@ -8,9 +8,10 @@ import { StatusreportbarComponent } from './statusreportbar/statusreportbar.comp
 import { LoginComponent } from './login/login.component';
 import { FooterComponent } from './footer/footer.component';
 import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofile.component';
+import { OperationsdashboardComponent } from './operationsdashboard/operationsdashboard.component';
 
 @NgModule({
-  declarations: [ContainerComponent, JobComponent, CollectionsComponent, ProcesstransactionsComponent, StatusreportbarComponent, LoginComponent, FooterComponent, GetnewuserprofileComponent],
+  declarations: [ContainerComponent, JobComponent, CollectionsComponent, ProcesstransactionsComponent, StatusreportbarComponent, LoginComponent, FooterComponent, GetnewuserprofileComponent, OperationsdashboardComponent],
   imports: [
     NativeScriptCommonModule
   ],

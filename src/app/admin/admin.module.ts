@@ -10,7 +10,7 @@ import { RolesComponent } from './roles/roles.component';
 import { StatusComponent } from './status/status.component';
 import { ReportComponent } from './report/report.component';
 import { Configuration } from '../config';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RoleFacade } from '../services/admin/rolefacade';
 import { MobxAngularModule } from 'mobx-angular';
@@ -32,6 +32,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { LoginComponent } from './login/login.component';
 import { UserAccess } from './services/userAccess';
 import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofile.component';
+import { TransactionTypePipe } from './pipes/transaction-type.pipe';
+import { StatusPipe } from './pipes/status.pipe';
+import { PlatenumberPipe } from './pipes/platenumber.pipe';
+import { TellerPipe } from './pipes/teller.pipe';
+import { SearchPipe } from './pipes/search.pipe';
+import { MomentModule } from 'ngx-moment';
+import { TokenInterceptor } from '../helpers/tokeninterceptor';
 
 @NgModule({
   declarations: [
@@ -48,7 +55,12 @@ import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofil
     ManageuserroleComponent,
     UserPipe,
     LoginComponent,
-    GetnewuserprofileComponent
+    GetnewuserprofileComponent,
+    TransactionTypePipe,
+    StatusPipe,
+    PlatenumberPipe,
+    TellerPipe,
+    SearchPipe
   ],
   imports: [
     CommonModule,
@@ -58,6 +70,11 @@ import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofil
     ReactiveFormsModule,
     NgxPaginationModule,
     NgSelectModule,
+    MomentModule.forRoot({
+      relativeTimeThresholdOptions: {
+        'm': 59
+      }
+    }),
     SharedModule,
     FormsModule,
     routing
@@ -69,6 +86,11 @@ import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofil
     TransactionTypeFacade, 
     ReportFacade, 
     UserAccess,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
     UserFacade,
     NgxSpinnerService
   ],

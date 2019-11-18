@@ -1,0 +1,68 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+  <div class="container-fluid">
+      <div class="row">
+<div style="text-align:center; margin:0 0 20px;">
+<img src="../../../assets/images/logonew.gif" alt="courtevillelogo"/>
+</div>
+  
+   <table class="table">
+    <thead>
+      <tr>
+        <th>Agent Name</th>
+        <th>Reg. Number</th>
+        <th>Transaction Type</th>
+        <th>Time Submitted</th>
+        <th>Time Used</th>
+        <th>Time Completed</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+  </table>        
+      </div>
+  </div>
+  </div>
+</nav>
+<div class="container" style="margin-top:200px;">  
+  <div class="container-fluid">
+      <div class="row">
+  
+<div id="post-stream">
+  <table class="table">
+    <tbody>
+          <tr *ngFor="let trans of operationsFacade.transactions" class="post">
+            <td>{{trans.customerName.firstname}} &nbsp;{{trans.customerName.lastname}}</td>
+            <td>{{trans.platenumber}}</td>
+            <td>{{trans.transactionType}}</td>
+            <td>{{trans.timeSubmitted | date:' h:mm a'}}</td>
+            <td *ngIf="trans.timeCompleted == null; else elseCompleted">
+              {{trans.timeSubmitted | amTimeAgo }}
+            </td>   
+            <ng-template #elseCompleted>
+                <td>
+                    {{getTimeDifference(trans.timeSubmitted, trans.timeCompleted) | amDuration:'seconds' }}
+                </td>   
+            </ng-template>     
+            <td *ngIf="trans.timeCompleted != 'null'"> {{ trans.timeCompleted | date: ' h:mma'}}</td>
+            <td class="{{trans.status}}">{{trans.status}}</td>
+          </tr>     
+    </tbody>
+  </table>
+</div>
+  </div>
+  </div>
+</div>  
+<script>
+  $("html, body").animate({ scrollTop: $(document).height() }, 120000);
+      setTimeout(function() {
+      $('html, body').animate({scrollTop:0}, 120000); 
+      },120000);
+      setInterval(function(){
+          // 4000 - it will take 4 secound in total from the top of the page to the bottom
+      $("html, body").animate({ scrollTop: $(document).height() }, 120000);
+      setTimeout(function() {
+      $('html, body').animate({scrollTop:0}, 120000); 
+      },120000);
+          
+      },120000);    
+</script>

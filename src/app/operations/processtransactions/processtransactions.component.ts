@@ -56,7 +56,7 @@ export class ProcesstransactionsComponent implements OnInit {
 
   ngOnInit() {
     this.spinner.show();
-    this._operationsService.getTodaysTransactions()
+    this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
     .subscribe(() => {
       this.spinner.hide();
     },
@@ -82,7 +82,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(() => {
           this.spinner.hide();
-          this.alertService.success("Transaction allocated to " + teller.firstname + " " + teller.lastname);
+          //this.alertService.success("Transaction allocated to " + teller.firstname + " " + teller.lastname);
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
@@ -109,7 +109,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(() => {
           this.spinner.hide();
-          this.alertService.success("Transaction assigned to " + teller.firstname + " " + teller.lastname);
+         // this.alertService.success("Transaction assigned to " + teller.firstname + " " + teller.lastname);
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
@@ -129,7 +129,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(()=> {
           this.spinner.hide();
-          this.alertService.success("Transaction flagged! ");
+         // this.alertService.success("Transaction flagged! ");
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();
@@ -150,7 +150,7 @@ export class ProcesstransactionsComponent implements OnInit {
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(()=> {
           this.spinner.hide();
-          this.alertService.success("Transaction rejected!");
+         // this.alertService.success("Transaction rejected!");
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();

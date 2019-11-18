@@ -14,6 +14,7 @@ import { NotfoundComponent } from './notfound/notfound.component';
 import { SharedModule } from './shared/shared.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { TimerStore } from './operations/timer/timerstore';
 
 @NgModule({
   declarations: [

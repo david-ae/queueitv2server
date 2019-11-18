@@ -5,7 +5,11 @@
                 <img src="./../../../assets/images/fav.png" class="navbar-brand-image d-inline-block align-top mr-2" alt="">
                 QueueIT
             </a>
-    
+            <form *ngIf="userAccess.auth" class="form-inline form-quicksearch d-none d-md-block mx-auto">
+                <a [routerLink]="['/agents-dashboard']" class="btn btn-sm btn-secondary">
+                    Agents Dashboard
+                </a>
+            </form>
             <div class="d-flex flex-1 d-block d-md-none">
                 <a class="sidebar-toggle ml-3">
                     <i-feather name="menu"></i-feather>

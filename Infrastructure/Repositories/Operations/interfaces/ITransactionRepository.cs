@@ -1,4 +1,4 @@
-﻿using queueitv2.Model.DomainModel;
+using queueitv2.Model.DomainModel;
 using queueitv2.Model.DomainModel.interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,5 +12,8 @@ namespace queueitv2.Infrastructure.Repositories.Operations.interfaces
         Task<bool> UpdateTransactionAsync(Transactions obj);
         Task<List<Transactions>> GetTodaysTransactions();
         Task<List<Transactions>> GetAssignedTransactionsForSeniorTeller(string id);
+        Task<List<Transactions>> GetTodaysProcessingTransactions();
+        Task<List<Transactions>> GetTodaysRejectedTransactions();
+        Task<List<Transactions>> GetTodaysSubmittedTransactions();
     }
 }

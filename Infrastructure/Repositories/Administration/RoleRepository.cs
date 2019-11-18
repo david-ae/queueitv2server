@@ -1,4 +1,4 @@
-﻿using MongoDB.Driver;
+using MongoDB.Driver;
 using queueitv2.Infrastructure.Repositories.Administration.interfaces;
 using queueitv2.Model.DomainModel;
 using System;
@@ -14,6 +14,19 @@ namespace queueitv2.Infrastructure.Repositories.Administration
         {
 
         }
+
+    public async Task<Roles> GetRoleById(string id)
+    {
+      try
+      {
+        var role = await _context.GetCollection<Roles>("roles").FindAsync(r => r.Id == id);
+        return await role.FirstOrDefaultAsync();
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
 
         public async Task<long> UpdateRoleAsync(Roles item)
         {

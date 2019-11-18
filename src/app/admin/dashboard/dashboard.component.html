@@ -91,7 +91,7 @@
         </div>
 
         <div class="col-md-6 col-lg-3 d-flex">
-            <div class="card border-0 bg-success text-white text-center mb-grid w-100">
+            <div class="returned card border-0 bg-success text-white text-center mb-grid w-100">
                 <div class="d-flex flex-row align-items-center h-100">
                     <div class="card-icon d-flex align-items-center h-100 justify-content-center">
                     <i data-feather="users"></i>
@@ -104,6 +104,21 @@
                     </div>
                 </div>
             </div>
+        </div>   
+        <div class="col-md-6 col-lg-3 d-flex">
+            <div class="card border-0 bg-success text-white text-center mb-grid w-100">
+                <div class="d-flex flex-row align-items-center h-100">
+                    <div class="card-icon d-flex align-items-center h-100 justify-content-center">
+                    <i data-feather="users"></i>
+                    </div>
+                    <div class="card-body">
+                    <div class="card-info-title">Total Received</div>
+                    <h2 class="card-title mb-0">
+                        <b><em>₦{{reportFacade.getTotalAmountReceived}}</em></b>
+                    </h2>
+                    </div>
+                </div>
+            </div>
         </div>        
     </div>
             
@@ -111,7 +126,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <div class="card-header-title">Activity</div>
+                    <div class="card-header-title">Activity Breakdown</div>
 
                     <nav class="card-header-actions">
                         <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
@@ -123,12 +138,9 @@
                         </a>
                     </nav>
                 </div>
-                <div *ngIf="operationsFacade.getTransactionList.length !== 0; else transactionActivityReportElseBlock"  class="card-body collapse show" id="card1">
+                <div *ngIf="reportFacade.transactionsBreakdownList.length !== 0; else transactionActivityReportElseBlock"  class="card-body collapse show" id="card1">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="card-header-title">{{transactionStatus}}&nbsp;&nbsp;Transactions</div>
-                        <button class="btn btn-primary" (click)="tellerSubmittedTransaction()" >Submitted</button>
-                        <button class="btn btn-warning" (click)="tellerProcessingTransactions()" >Processing</button>
-                        <button class="awaiting-mail btn" (click)="tellerAwaitingMailTransactions()" >Awaiting Mail</button>
+                        <input type="text" [(ngModel)]="searchText1" class="form-control" placeholder="Search Today's Transactions with Status" [ngModelOptions]="{standalone:true}">
                     </div>
                     <table class="table table-striped mb-0">
                         <thead>
@@ -136,19 +148,28 @@
                             <th scope="col">#</th>
                             <th scope="col">Worked on by</th>
                             <th scope="col">Status</th>
-                            <!-- <th scope="col">Count</th> -->
+                            <th scope="col">Transaction Type</th>
                             <th scope="col">Plate Number</th>
+                            <th scope="col">Time Used</th>
                             <th scope="col">Amount Processed</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let activity of reportFacade.transactionActivity | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;" >
+                            <tr *ngFor="let activity of reportFacade.transactionActivity | status: searchText1 | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;" >
                                 <td>{{i + 1}}</td>
                                 <td>{{activity.tellerFullName}}</td>
                                 <td>{{activity.status}}</td>
-                                <!-- <td>{{activity.count}}</td> -->
+                                <td>{{activity.transactionType}}</td>
                                 <td>{{activity.platenumber}}</td>
-                                <td>{{activity.amountProcessed}}</td>
+                                <td *ngIf="activity.timeCompleted == null; else elseCompleted">
+                                   {{activity.timeSubmitted | amTimeAgo }}
+                                </td>   
+                                <ng-template #elseCompleted>
+                                    <td>
+                                       {{getTimeDifference(activity.timeSubmitted, activity.timeCompleted) | amDuration:'seconds' }}
+                                    </td>   
+                                </ng-template> 
+                                <td><b><em>₦{{activity.amountProcessed}}</em></b></td>
                             </tr>
                         </tbody>
                     </table>
@@ -190,6 +211,56 @@
                 </div>
                 <ng-template #transactionAnalysisElseBlock>
                     <h3 class="card mb-grid text-center"><b><em>No analysis spooled</em></b></h3>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div *mobxAutorun class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header-title">Teller Transaction Report</div>
+
+                    <nav class="card-header-actions">
+                        <a class="card-header-action" data-toggle="collapse" href="#card3" aria-expanded="false" aria-controls="card3">
+                            <i-feather name="minus-circle"></i-feather>
+                        </a>
+
+                        <a href="#" class="card-header-action">
+                            <i-feather name="x-circle"></i-feather>
+                        </a>
+                    </nav>
+                </div>
+                <div *ngIf="reportFacade.tellerReportSummaries.length !== 0; else tellerTransactionReportElseBlock"  class="card-body collapse show" id="card3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <input type="text" [(ngModel)]="searchText2" class="form-control" placeholder="Search Today's Report with Teller Name" [ngModelOptions]="{standalone:true}">
+                    </div>
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Teller Name</th>
+                            <th scope="col">Count</th>
+                            <th scope="col">Amount Processed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let tellerTransactionSummary of reportFacade.getTellerTransactionSummaries | teller: searchText2 | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;" >
+                                <td>{{i + 1}}</td>
+                                <td>{{tellerTransactionSummary.tellerName}}</td>
+                                <td>{{tellerTransactionSummary.count}}</td>
+                                <td><b><em>₦{{tellerTransactionSummary.amountProcessed}}</em></b></td>
+                            </tr>
+                            <tr>
+                                <td style="left: 0px"><b>Total:<em>₦{{reportFacade.getTellerTransactionSummariesTotal}}</em></b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+                </div>
+                <ng-template #tellerTransactionReportElseBlock>
+                    <h3 class="card mb-grid text-center"><b><em>Teller Transaction not available yet.</em></b></h3>
                 </ng-template>
             </div>
         </div>

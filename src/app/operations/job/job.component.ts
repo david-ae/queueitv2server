@@ -7,16 +7,13 @@ import { TransactionService } from '../services/transaction.service';
 import { Transaction } from 'src/app/domainmodel/interfaces/transaction';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { UserVO } from 'src/app/valueobjects/userVO';
-import { OutletImp } from 'src/app/domainmodel/outletimp';
 import { TransactionApiModel } from '../apimodels/transactionapimodel';
 import { OperationsService } from '../services/operations.service';
-import { TransactionType } from 'src/app/domainmodel/transactiontype';
 import { TransactionTypeFacade } from 'src/app/services/admin/transactiontypefacade';
 import { Configuration } from 'src/app/config';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { OperationsFacade } from 'src/app/services/operations/operationsfacade';
 import { HttpErrorResponse } from '@angular/common/http';
-import { finalize } from 'rxjs/operators';
 import { AlertService } from 'src/app/shared/_services';
 import { UserAccess } from './../../services/authentication/usersAccess';
 
@@ -93,7 +90,7 @@ export class JobComponent implements OnInit {
   ngOnInit() {        
     this.spinner.show();
     //invoke signalr
-      this._operationsService.getTodaysTransactions()
+      this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
     .subscribe(() => {
       this.spinner.hide();
     });
@@ -128,7 +125,6 @@ export class JobComponent implements OnInit {
     transaction.createdBy = this.userAccess.user;
     transaction.treatedBy = this.transactionForm.get("tellerid").value;
     transaction.timeSubmitted = new Date();
-    transaction.outletName = "Courteville";
     transaction.allocatedTime = "10";
 
     this._transactionService.addTransaction(transaction)
@@ -178,13 +174,13 @@ export class JobComponent implements OnInit {
     this.operationsFacade.transaction.amount = this.transactionForm.get("amount").value;
 
     let tellerid: string = this.transactionForm.get("tellerid").value;
-    let teller = this.operationsFacade.getTellerById(tellerid);
+    let teller = this.operationsFacade.getSeniorTellerById(tellerid);
     this.operationsFacade.transaction.treatedBy.push(teller); 
     this._transactionService.updateTransaction(this.operationsFacade.transaction)
         .subscribe(() => {
           this.spinner.hide();
           this.transactionForm.reset({tellerid: 0, transactiontype: 0});          
-          this.alertService.success("Transaction Updated.");
+          //this.alertService.success("Transaction Updated.");
         },
         (err: HttpErrorResponse) => {
           this.spinner.hide();

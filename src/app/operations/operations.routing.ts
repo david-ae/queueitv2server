@@ -5,6 +5,7 @@ import { CollectionsComponent } from './collections/collections.component';
 import { ModuleWithProviders } from '@angular/core';
 import { ProcesstransactionsComponent } from './processtransactions/processtransactions.component';
 import { LoginComponent } from './login/login.component';
+import { OperationsdashboardComponent } from './operationsdashboard/operationsdashboard.component';
 
 const routes: Routes = [
     {
@@ -16,9 +17,13 @@ const routes: Routes = [
             { path: 'login', component: LoginComponent },
             { path: 'process-jobs', component: JobComponent },
             { path: 'checkout-jobs', component: CollectionsComponent },
-            { path: 'process-transactions', component: ProcesstransactionsComponent }
+            { path: 'process-transactions', component: ProcesstransactionsComponent }            
         ]
-    }    
+    },
+    {
+        path: 'agents-dashboard',
+        component: OperationsdashboardComponent
+    }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forChild(routes);

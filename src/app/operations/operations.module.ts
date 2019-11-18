@@ -31,6 +31,13 @@ import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofil
 import { UserAccess } from './services/userAccess';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Configuration } from '../config';
+import { OperationsdashboardComponent } from './operationsdashboard/operationsdashboard.component';
+import { TimerPipe } from './pipes/timer.pipe';
+import { NgxTimerModule } from 'ngx-timer';
+import { TimerStore } from './timer/timerstore';
+import { MomentModule } from 'ngx-moment';
+import { StatusPipe } from './pipes/status.pipe';
+import { TransactiontypePipe } from './pipes/transactiontype.pipe';
 
 @NgModule({
   declarations: [
@@ -39,13 +46,19 @@ import { Configuration } from '../config';
     CollectionsComponent, 
     ProcesstransactionsComponent, 
     StatusreportbarComponent, 
-    TransactionPipe, 
-    TellertransactionPipe, LoginComponent, FooterComponent, GetnewuserprofileComponent],
+    TransactionPipe,     
+    TellertransactionPipe, LoginComponent, FooterComponent, GetnewuserprofileComponent, OperationsdashboardComponent, TimerPipe, StatusPipe, TransactiontypePipe],
   imports: [
     CommonModule,
     HttpClientModule,
+    NgxTimerModule,
     NgxPaginationModule,
     ReactiveFormsModule,
+    MomentModule.forRoot({
+      relativeTimeThresholdOptions: {
+        'm': 59
+      }
+    }),
     FormsModule,
     NgSelectModule,
     SharedModule,   
@@ -58,6 +71,7 @@ import { Configuration } from '../config';
     OperationsFacade,
     TransactionTypeFacade,
     RoleFacade,
+    TimerStore,
     NgxSpinnerService,
     StatusFacade,
     ReportFacade,

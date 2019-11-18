@@ -14,39 +14,39 @@ import { UserAccess } from './userAccess';
 })
 export class AuthService {
   private loggedIn = false;
-  httpOptions = {};
+  httpOptions: HttpHeaders;
 
   constructor(private userAccess: UserAccess, private _configuration: Configuration, private _http: HttpClient) { 
-    this.httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authoratization': ''
-      })
-    };
+    this.httpOptions = new HttpHeaders({
+      'Content-Type':  'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('id_token')
+    });
   }
 
   login(model: UserLoginApiModel){
-    return this._http.post<UserLoginApiModel>(this._configuration.ServerAdminWithApiAccountUrl + "login", JSON.stringify(model), this.httpOptions)
+    return this._http.post<UserLoginApiModel>(this._configuration.ServerAdminWithApiAccountUrl + "login", JSON.stringify(model), { headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 
   getUserUsingId(id: string){
-    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingId", JSON.stringify(id), this.httpOptions)
+    return this._http.get(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingId",
+    {params: { id: id}, 
+     headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 
   loginAsTeller(model: UserLoginApiModel){
-    return this._http.post<UserLoginApiModel>(this._configuration.ServerAdminWithApiAccountUrl + "loginasteller", JSON.stringify(model), this.httpOptions)
+    return this._http.post<UserLoginApiModel>(this._configuration.ServerAdminWithApiAccountUrl + "loginasteller", JSON.stringify(model), { headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 
   getNewUserProfile(email: string){
-    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getNewAccountProfile", JSON.stringify(email), this.httpOptions)
+    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getNewAccountProfile", JSON.stringify(email), { headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 
   getUserOldAccount(email: string){
-    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingAccountByEmail", JSON.stringify(email), this.httpOptions)
+    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingAccountByEmail", JSON.stringify(email), { headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 

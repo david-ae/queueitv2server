@@ -92,10 +92,10 @@ export class LoginComponent implements OnInit {
       }
     );   
     
-    this._operationsService.getTodaysTransactions()
-    .subscribe((data: QueueITTransaction[]) => {
+    // this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
+    // .subscribe((data: QueueITTransaction[]) => {
       
-    });
+    // });
     
   }
 

@@ -20,33 +20,42 @@ export class OperationsService {
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authoratization': ''
+        'Authorization': `Bearer ${localStorage.getItem('id_token')}`
       })
     };
   }  
 
   getTransactiontypes(){
-    return this._http.get<TransactionType>(this._configuration.ServerAdminWithApiUrl + "getalltransactiontypes", this.httpOptions)
+    return this._http.get<TransactionType[]>(this._configuration.ServerAdminWithApiUrl + "getalltransactiontypes",
+    { headers: this.httpOptions } )
         .pipe(catchError(this.handleError));
   }
   
-  getTodaysTransactions(){
-    return this._http.post<QueueITTransaction>(this._configuration.ServerOperationsWithApiUrl + "getTodaysTransactions", this.httpOptions)
+  getTodaysTransactions(id: string){
+    return this._http.get<QueueITTransaction[]>(this._configuration.ServerOperationsWithApiUrl + "getTodaysTransactions",
+    { params: { id: id },
+      headers: this.httpOptions
+    } )
         .pipe(delay(100),catchError(this.handleError));
-  }
+    }
 
   getAssignedTransactionsForTeller(id: string){
-    return this._http.post<QueueITTransaction>(this._configuration.ServerOperationsWithApiUrl + "getAssignedTellersTransactions", JSON.stringify(id), this.httpOptions)
+    return this._http.get<QueueITTransaction[]>(this._configuration.ServerOperationsWithApiUrl + "getAssignedTellersTransactions",
+    { params: { id: id },
+      headers: this.httpOptions
+     } )
         .pipe(delay(100), catchError(this.handleError));
   }
 
   getSeniorTellers(){
-    return this._http.get<UserVO>(this._configuration.ServerOperationsWithApiUrl + "getallseniortellers", this.httpOptions)
+    return this._http.get<UserVO[]>(this._configuration.ServerOperationsWithApiUrl + "getallseniortellers", 
+    { headers: this.httpOptions})
         .pipe(catchError(this.handleError));
   }
 
   getTransactionalTellers(){
-    return this._http.get<UserVO>(this._configuration.ServerOperationsWithApiUrl + "getalltransactionaltellers", this.httpOptions)
+    return this._http.get<UserVO[]>(this._configuration.ServerOperationsWithApiUrl + "getalltransactionaltellers", 
+    {headers: this.httpOptions})
         .pipe(catchError(this.handleError));
   }
 

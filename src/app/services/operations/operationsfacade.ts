@@ -4,13 +4,16 @@ import { UserVO } from '../../valueobjects/userVO';
 import { observable, computed, action, autorun } from 'mobx';
 import { Injectable } from '@angular/core';
 import { OperationsService } from 'src/app/operations/services/operations.service';
+import { TransactionType } from 'src/app/domainmodel/transactiontype';
 
 @Injectable()
 export class OperationsFacade{
     //#region Transactions
     @observable transactions: QueueITTransaction[];
+    @observable transactionsWithTimer: QueueITTransaction[];
     @observable transaction: QueueITTransaction;
     @observable tellerTransactions: QueueITTransaction[];
+    @observable transactionTypes: TransactionType[];
     //#endregion
 
     //#region Tellers
@@ -32,6 +35,7 @@ export class OperationsFacade{
             this.tellersUserVO = [];
             this.teller = new Accounts();
             this.seniorTellersUserVO = [];
+            this.transactionsWithTimer = [];
             
             autorun(()=>{
                 //load up senior tellers
@@ -45,6 +49,11 @@ export class OperationsFacade{
                     .subscribe((data: UserVO[]) => {
                         this.tellersUserVO = data;
                     });
+                //load up
+                this._operationsService.getTransactiontypes()
+                .subscribe((data: TransactionType[]) => {
+                    this.transactionTypes = data;
+                });
             });
         
     }
@@ -86,12 +95,38 @@ export class OperationsFacade{
         return teller;
     }
 
+    @computed get formTransactionsWithTimer(){
+        return this.transactionsWithTimer;
+    }
+
+    @action startTimer(time: string) {
+        let t = parseInt(time);
+        let interval;
+        interval = setInterval(() => {
+          t++;
+        },1000)
+    }
+
+    getSecondsBetweenDates(transaction: QueueITTransaction): QueueITTransaction{
+        let datecreated = new Date(transaction.datecreated);	
+        let secondsBetweenDates = Math.abs((new Date().getTime() - datecreated.getTime() /1000));
+        transaction.allocatedTime = secondsBetweenDates.toString();
+		return transaction;
+	}
+
+    @action reformTransactions(transactions: QueueITTransaction[]){
+        transactions.forEach(transaction => {
+            this.getSecondsBetweenDates(transaction);
+            this.transactionsWithTimer.push(transaction);
+        });
+    }
+
     @action getTransactionalTellerById(id: string){
         var _teller = this.transactionalTellers.find(t => t.identity == id);
         if(_teller != null){
             return _teller;
         }
-        return _teller;
+        return _teller;        
     }
 
     @action getTellerById(id: string){

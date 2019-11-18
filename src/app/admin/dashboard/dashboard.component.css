@@ -2,8 +2,11 @@
     width: 100%;
 }
 .awaiting-mail{
-    background-color:yellow;
+    background-color:darkkhaki;
 }
 .completed{
     background-color:yellowgreen;
+}
+.returned{
+    background-color: goldenrod;
 }

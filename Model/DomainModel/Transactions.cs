@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using queueitv2.Model.DomainModel.interfaces;
 using queueitv2.Model.DomainModel.valueobjects;

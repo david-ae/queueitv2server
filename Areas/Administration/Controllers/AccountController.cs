@@ -17,9 +17,12 @@ using queueitv2.Areas.Administration.Model;
 using queueitv2.Infrastructure.Repositories;
 using queueitv2.Model;
 using queueitv2.Model.DomainModel.valueobjects;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace queueitv2.Areas.Administration.Controllers
 {
+    
   [Route("api/administration/[controller]")]
   [ApiController]
   public class AccountController : ControllerBase
@@ -59,6 +62,7 @@ namespace queueitv2.Areas.Administration.Controllers
       };
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     // POST api/values
     [HttpPost, Route("register")]
     public async Task<object> Register([FromBody]ManageUserApiModel model)
@@ -109,6 +113,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestObjectResult(model);
     }
 
+        [AllowAnonymous]
     [HttpPost, Route("login")]
     public async Task<object> Login([FromBody]UserLoginApiModel model)
     {
@@ -149,7 +154,7 @@ namespace queueitv2.Areas.Administration.Controllers
         }
 
         var json = JsonConvert.SerializeObject(response, _serializerSettings);
-        return new OkObjectResult(json);
+        return Ok(json);
       }
       catch (Exception ex)
       {
@@ -159,6 +164,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestObjectResult(model);
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("changeuserpassword")]
     public async Task<IActionResult> Reset([FromBody]ChangePasswordApiModel model)
     {
@@ -189,7 +195,8 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestObjectResult(model);
     }
 
-    [HttpPost, Route("getallusers")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [HttpGet, Route("getallusers")]
     public async Task<IActionResult> GetAllUsers()
     {
       try
@@ -208,6 +215,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestResult();
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("getalltellers")]
     public async Task<IActionResult> GetAllTellers()
     {
@@ -237,6 +245,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestResult();
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("getallactiveusers")]
     public async Task<IActionResult> GetAllActiveUsers()
     {
@@ -266,6 +275,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestResult();
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("removerole")]
     public async Task<IActionResult> RemoveFromRole([FromBody]ManageRoleApiModel model)
     {
@@ -296,6 +306,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestObjectResult(model);
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("addusertorole")]
     public async Task<IActionResult> AddUserToRole([FromBody]ManageRoleApiModel model)
     {
@@ -326,6 +337,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return new BadRequestObjectResult(model);
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("addroletouser")]
     public async Task<IActionResult> AddRoleToUser([FromBody]UserRoleViewModel model)
     {
@@ -353,6 +365,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest();
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("updateuser")]
     public async Task<IActionResult> ModifyUser([FromBody]ManageUserApiModel model)
     {
@@ -388,6 +401,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest();
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("deactivateuser")]
     public async Task<IActionResult> DeactivateUser([FromBody]string id)
     {
@@ -420,6 +434,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest(ModelState);
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost, Route("reactivateuser")]
     public async Task<IActionResult> ReactivateUser([FromBody]string id)
     {
@@ -452,6 +467,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest(ModelState);
     }
 
+    [AllowAnonymous]
     [HttpPost, Route("getNewAccountProfile")]
     public async Task<IActionResult> getNewAccountProfile([FromBody] string email)
     {
@@ -509,28 +525,22 @@ namespace queueitv2.Areas.Administration.Controllers
 
     private async Task<object> GenerateJwtToken(string email, Users user)
     {
-      var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            };
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
-      var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-      var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+      var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-      var token = new JwtSecurityToken(
-          _configuration["JwtIssuer"],
-          _configuration["JwtIssuer"],
-          claims,
-          expires: expires,
-          signingCredentials: creds
-      );
+      var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+
+        _configuration["Jwt:Issuer"],
+
+        expires: DateTime.Now.AddMinutes(30),
+
+        signingCredentials: creds);
 
       return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    [AllowAnonymous]
     [HttpGet, Route("getTellerUsingIdentityById")]
     public async Task<IActionResult> GetTellerUsingIdentityById([FromBody] string id)
     {
@@ -560,6 +570,7 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest(id);
     }
 
+    [AllowAnonymous]
     [HttpPost, Route("getTellerUsingAccountById")]
     public async Task<IActionResult> GetTellerUsingAccountsById([FromBody] string id)
     {
@@ -589,7 +600,8 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest(id);
     }
 
-    [HttpPost, Route("getUserUsingAccountByEmail")]
+    [AllowAnonymous]
+    [HttpGet, Route("getUserUsingAccountByEmail")]
     public async Task<IActionResult> GetUserUsingAccountsByEmail([FromBody] string email)
     {
       try
@@ -624,8 +636,9 @@ namespace queueitv2.Areas.Administration.Controllers
       return BadRequest(email);
     }
 
-    [HttpPost, Route("getUserUsingId")]
-    public async Task<IActionResult> GetUserUsingId([FromBody] string id)
+    [AllowAnonymous]
+    [HttpGet, Route("getUserUsingId")]
+    public async Task<IActionResult> GetUserUsingId(string id)
     {
       try
       {

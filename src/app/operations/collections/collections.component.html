@@ -5,7 +5,6 @@
         <div class="card mb-grid">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="card-header-title">Today's Transactions</div>
-                <app-statusreportbar></app-statusreportbar>
                 <nav class="card-header-actions">
                     <a class="card-header-action" data-toggle="collapse" href="#card1" aria-expanded="false" aria-controls="card1">
                     <i-feather name="minus-circle"></i-feather>
@@ -14,7 +13,7 @@
             </div>
         <div class="card-body collapse show" id="card1">
             <form>
-                <div class="form-row">
+                <!-- <div class="form-row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="validationCustom01">Search By Status</label>
                         <select class="form-control">
@@ -29,10 +28,21 @@
                             <option *ngFor="let transactionType of transactionTypeFacade.getAllTransactionTypes" [value]="transactionType.id">{{transactionType.name}}</option>
                         </select>
                     </div>
-                </div>
+                </div> -->
                 <div class="form-row">
-                        <input type="text" [(ngModel)]="searchText" class="form-control" 
-                        placeholder="Filter Transaction By Reg Number, Amount, Transaction Type" [ngModelOptions]="{standalone: true}">
+                    <div class="col-md-4">
+                            <input type="text" [(ngModel)]="searchText1" class="form-control" 
+                            placeholder="Filter Transaction By Reg Number, Agent Name or Amount" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="col-md-4">
+                            <input type="text" [(ngModel)]="searchText2" class="form-control" 
+                            placeholder="Filter Transaction By Status" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="col-md-4">
+                            <input type="text" [(ngModel)]="searchText3" class="form-control" 
+                            placeholder="Filter Transaction By Transaction Type" [ngModelOptions]="{standalone: true}">
+                    </div>
+                        
                 </div>
             </form>
             </div>
@@ -40,27 +50,27 @@
     </div>
 </div>
 <div *mobxAutorun class="row">
-    <div class="col-lg-12">
-        <div class="card mb-grid" *ngIf="operationsFacade.getTransactionList.length !== 0; else transactionListBlock">
+    <div class="col-lg-12" style="width: 0px !important;">
+        <div class="card" *ngIf="operationsFacade.getTransactionList.length !== 0; else transactionListBlock">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="card-header-title">Transactions</div>
             </div>
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th class="col">#</th>
-                        <th class="col">Agent Name</th>
-                        <th class="col">Trans. Type</th>
-                        <th class="col">Reg. No.</th>
-                        <th class="col">Submitted</th>
-                        <th class="col">Rejected</th>
-                        <th class="col">Completed</th>
-                        <th  class="col">Treated By</th>
-                        <th class="col">Status</th>
+                        <th scope="col">#</th>
+                        <th scope="col">Agent Name</th>
+                        <th scope="col">Trans. Type</th>
+                        <th scope="col">Reg. No.</th>
+                        <th scope="col">Submitted</th>
+                        <th scope="col">Rejected</th>
+                        <th scope="col">Completed</th>
+                        <th scope="col">Treated By</th>
+                        <th scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let transaction of operationsFacade.transactions | transaction: searchText | tellertransaction: searchText | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;" class="active">
+                    <tr *ngFor="let transaction of operationsFacade.transactions | transaction: searchText1 | status: searchText2 | transactiontype: searchText3 | paginate: { itemsPerPage: 10, currentPage: p }; let i = index;">
                         <td>{{i + 1}}</td>
                         <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
                         <td>{{transaction.transactionType}}</td>

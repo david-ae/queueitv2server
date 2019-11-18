@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using queueitv2.Infrastructure.Repositories.Administration.interfaces;
 using queueitv2.Model.DomainModel;
@@ -16,7 +16,20 @@ namespace queueitv2.Infrastructure.Repositories.Administration
 
         }
 
-        public async Task<bool> UpdateTransactionTypeAsync(TransactionTypes item)
+    public async Task<TransactionTypes> GetTransactionTypeById(string id)
+    {
+      try
+      {
+        var transactionType = await _context.GetCollection<TransactionTypes>("transactiontypes").FindAsync(t => t.Id == id);
+        return await transactionType.FirstOrDefaultAsync();
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
+
+    public async Task<bool> UpdateTransactionTypeAsync(TransactionTypes item)
         {
             var result = await _context.GetCollection<TransactionTypes>("transactiontypes").ReplaceOneAsync(
                 Builders<TransactionTypes>.Filter.Eq(p => p.Id, item.Id),

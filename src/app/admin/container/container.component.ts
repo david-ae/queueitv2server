@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import { UserAccess } from './../../services/authentication/usersAccess';
 import { AuthService } from 'src/app/admin/services/auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-container',
@@ -10,6 +11,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./container.component.css']
 })
 export class ContainerComponent implements OnInit{
+  
+  subscription: Subscription;
+  authentication: boolean;
   constructor(public userAccess: UserAccess, private authService: AuthService,
     private _router: Router) { }
 

@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { UserVO } from 'src/app/valueobjects/userVO';
 import { TellerTransactionActivity } from './displaymodels/telleractivitybreakdown';
 import { TellerReportSystem } from './storehelpers/tellerreportsystem';
+import { TellerReportSummary } from './displaymodels/tellerReportSummary';
 
 @Injectable()
 export class ReportFacade{
@@ -21,18 +22,22 @@ export class ReportFacade{
     //for report summary
     @observable summarySubmittedTransactions: QueueITTransaction[];
     @observable summaryCompletedTransactions: QueueITTransaction[];
+    @observable tellerReportSummaries: TellerReportSummary[];
     @observable summaryReturnedTransactions: QueueITTransaction[];
     //#endregion
-
-    
 
     //#region "teller report system"
     @observable reportSystem: TellerReportSystem;
     @observable transactionStatus: string;
+    @observable totalAmountReceived: number;
 
     @observable submittedTransactionsBreakdownList: TellerTransactionActivity[];
     @observable processingTransactionsBreakdownList: TellerTransactionActivity[];
+    @observable completedTransactionsBreakdownList: TellerTransactionActivity[];
+    @observable returnedTransactionsBreakdownList: TellerTransactionActivity[];
+    @observable rejectedTransactionsBreakdownList: TellerTransactionActivity[];
     @observable awaitingMailTransactionsBreakdownList: TellerTransactionActivity[];
+    @observable issueTransactionsBreakdownList: TellerTransactionActivity[];
     @observable transactionsBreakdownList: TellerTransactionActivity[];
     //#endregion
 
@@ -47,12 +52,13 @@ export class ReportFacade{
         this.summaryCompletedTransactions = [];
         this.summaryReturnedTransactions = [];
         this.summarySubmittedTransactions = [];
-
+        this.tellerReportSummaries = [];
         this.submittedTransactionsBreakdownList = [];
         this.processingTransactionsBreakdownList = [];
         this.awaitingMailTransactionsBreakdownList = [];
-        this.transactionsBreakdownList = [];
-        
+        this.issueTransactionsBreakdownList = [];
+        this.transactionsBreakdownList = [];    
+        this.totalAmountReceived = 0;    
     }
     //#region Today Dashboard Snapshot Setup
 
@@ -146,6 +152,18 @@ export class ReportFacade{
         return this.returnedTransactions.length;
     }
 
+    @computed get getTotalAmountReceived(){
+        return this.totalAmountReceived;
+    }
+
+    @action sortTotalAmountReceived(transactions: QueueITTransaction[]): number{
+
+        this.totalAmountReceived = transactions.map(transaction => transaction.amount).reduce((a, c) => {
+            return a + c
+        }, 0);
+        return this.totalAmountReceived;
+    }
+
     @action sortSummaryOfReturnedTransactions(transactions: QueueITTransaction[]): QueueITTransaction[]{
         this.summaryReturnedTransactions = transactions.filter(t => t.status == "Returned");
         return this.summaryReturnedTransactions;
@@ -167,13 +185,16 @@ export class ReportFacade{
     }
 
     @action prepareSubmittedTransactionActivity(transactions: QueueITTransaction[]){
-        this.transactionsBreakdownList = [];
+        // this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "SUBMITTED"){
                 let activity = new TellerTransactionActivity();
                 activity.tellerFullName = transaction.createdBy.firstname + " " + transaction.createdBy.lastname;
                 activity.platenumber = transaction.platenumber;
                 activity.count++;
+                activity.timeCompleted = transaction.timeCompleted;
+                activity.timeSubmitted = transaction.timeSubmitted;
+                activity.transactionType = transaction.transactionType;
                 activity.status = transaction.status;
                 activity.amountProcessed = transaction.amount;
                 this.transactionsBreakdownList.push(activity);
@@ -181,12 +202,60 @@ export class ReportFacade{
         });
     }
 
+    @computed get getTellerTransactionSummaries(){
+        return this.tellerReportSummaries;
+    }
+
+    @computed get getTellerTransactionSummariesTotal(){
+        let total = this.tellerReportSummaries.map(summary => summary.amountProcessed).reduce((a, c) =>{
+            return a + c
+        });
+        return total;
+    }
+
+    @action prepareTellerTransactionSummaries(transactions: QueueITTransaction[]){
+        transactions.forEach(transaction => {
+            //if there are no report yet, create one
+            if(this.tellerReportSummaries.length == 0){
+                //if the transaction has ever been completed, create the teller report summary
+                if(transaction.timeCompleted !== null){
+                    let tellerReport = new TellerReportSummary();
+                    tellerReport.tellerId = transaction.createdBy.identity;
+                    tellerReport.count++;
+                    tellerReport.tellerName = transaction.createdBy.firstname 
+                                        + " " + transaction.createdBy.lastname;
+                    tellerReport.amountProcessed += transaction.amount;
+                    this.tellerReportSummaries.push(tellerReport);
+                }
+            }
+            else if(this.tellerReportSummaries.length > 0){
+                let result = this.checkIfTellerExists(transaction.createdBy.identity, this.tellerReportSummaries);
+
+                if(result){
+                    this.tellerReportSummaries.forEach(tellerSummary => {
+                        tellerSummary.amountProcessed += transaction.amount;
+                        tellerSummary.count++;
+                    });
+                }
+            }
+        });
+    }
+
+    checkIfTellerExists(tellerId:  string, tellerSummaries: TellerReportSummary[]){
+        let teller = tellerSummaries.find(s => s.tellerId == tellerId);
+        if(teller != null){
+            return true;
+        }
+
+        return false;
+    }
+
     @computed get processingTransactionActivity(){
         return this.processingTransactionsBreakdownList;
     }
 
     @action prepareProcessingTransactionActivity(transactions: QueueITTransaction[]){
-        this.transactionsBreakdownList = [];
+        // this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "PROCESSING"){                
                 transaction.treatedBy.forEach(teller => {
@@ -195,7 +264,94 @@ export class ReportFacade{
                             let activity = new TellerTransactionActivity();
                             activity.tellerFullName = teller.firstname + " " + teller.lastname;
                             activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
                             activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
+                            activity.status = transaction.status;
+                            activity.amountProcessed += transaction.amount;
+                            this.transactionsBreakdownList.push(activity);
+                        }
+                    });
+                });                
+            }
+        });
+    }
+
+    @computed get completedTransactionActivity(){
+        return this.completedTransactionsBreakdownList;
+    }
+
+    @action prepareCompletedTransactionActivity(transactions: QueueITTransaction[]){
+        // this.transactionsBreakdownList = [];
+        transactions.forEach(transaction => {
+            if(transaction.status.toUpperCase() == "COMPLETED"){                
+                transaction.treatedBy.forEach(teller => {
+                    teller.roles.forEach(role => {
+                        if(role == "SENIOR TELLER"){
+                            let activity = new TellerTransactionActivity();
+                            activity.tellerFullName = teller.firstname + " " + teller.lastname;
+                            activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
+                            activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
+                            activity.status = transaction.status;
+                            activity.amountProcessed += transaction.amount;
+                            this.transactionsBreakdownList.push(activity);
+                        }
+                    });
+                });                
+            }
+        });
+    }
+
+    @computed get returnedTransactionActivity(){
+        return this.returnedTransactionsBreakdownList;
+    }
+
+    @action prepareReturnedTransactionActivity(transactions: QueueITTransaction[]){
+        // this.transactionsBreakdownList = [];
+        transactions.forEach(transaction => {
+            if(transaction.status.toUpperCase() == "RETURNED"){                
+                transaction.treatedBy.forEach(teller => {
+                    teller.roles.forEach(role => {
+                        if(role == "SENIOR TELLER"){
+                            let activity = new TellerTransactionActivity();
+                            activity.tellerFullName = teller.firstname + " " + teller.lastname;
+                            activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
+                            activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
+                            activity.status = transaction.status;
+                            activity.amountProcessed += transaction.amount;
+                            this.transactionsBreakdownList.push(activity);
+                        }
+                    });
+                });                
+            }
+        });
+    }
+
+    @computed get rejectedTransactionActivity(){
+        return this.rejectedTransactionsBreakdownList;
+    }
+
+    @action prepareRejectedTransactionActivity(transactions: QueueITTransaction[]){
+        // this.transactionsBreakdownList = [];
+        transactions.forEach(transaction => {
+            if(transaction.status.toUpperCase() == "REJECTED"){                
+                transaction.treatedBy.forEach(teller => {
+                    teller.roles.forEach(role => {
+                        if(role == "SENIOR TELLER" || role == "TRANSACTIONAL TELLER" || role == "TELLER"){
+                            let activity = new TellerTransactionActivity();
+                            activity.tellerFullName = teller.firstname + " " + teller.lastname;
+                            activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
+                            activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
                             activity.status = transaction.status;
                             activity.amountProcessed += transaction.amount;
                             this.transactionsBreakdownList.push(activity);
@@ -210,8 +366,8 @@ export class ReportFacade{
         return this.awaitingMailTransactionsBreakdownList;
     }
 
-    @action prepareAwaitingMailTransactionActivity(transactions: QueueITTransaction[]){
-        this.transactionsBreakdownList = [];
+    @action prepareAwaitingMailTransactionActivity(transactions: QueueITTransaction[]){        //this.transactionsBreakdownList = [];
+        // this.transactionsBreakdownList = [];
         transactions.forEach(transaction => {
             if(transaction.status.toUpperCase() == "AWAITING-MAIL"){                
                 transaction.treatedBy.forEach(teller => {
@@ -220,7 +376,38 @@ export class ReportFacade{
                             let activity = new TellerTransactionActivity();
                             activity.tellerFullName = teller.firstname + " " + teller.lastname;
                             activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
                             activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
+                            activity.status = transaction.status;
+                            activity.amountProcessed += transaction.amount;
+                            this.transactionsBreakdownList.push(activity);
+                        }
+                    });
+                });                
+            }
+        });
+    }
+
+    @computed get issueTransactionActivity(){
+        return this.issueTransactionsBreakdownList;
+    }
+
+    @action prepareIssueTransactionActivity(transactions: QueueITTransaction[]){        //this.transactionsBreakdownList = [];
+        // this.transactionsBreakdownList = [];
+        transactions.forEach(transaction => {
+            if(transaction.status.toUpperCase() == "ISSUE"){                
+                transaction.treatedBy.forEach(teller => {
+                    teller.roles.forEach(role => {
+                        if(role == "SENIOR TELLER"){
+                            let activity = new TellerTransactionActivity();
+                            activity.tellerFullName = teller.firstname + " " + teller.lastname;
+                            activity.count++;
+                            activity.timeCompleted = transaction.timeCompleted;
+                            activity.timeSubmitted = transaction.timeSubmitted;
+                            activity.platenumber = transaction.platenumber;
+                            activity.transactionType = transaction.transactionType;
                             activity.status = transaction.status;
                             activity.amountProcessed += transaction.amount;
                             this.transactionsBreakdownList.push(activity);

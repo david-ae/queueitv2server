@@ -47,7 +47,7 @@ export class CollectionsComponent implements OnInit {
 
   ngOnInit() {
     this.spinner.show();
-    this._operationsService.getTodaysTransactions()
+    this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
     .subscribe(() => {
       this.spinner.hide();
     });

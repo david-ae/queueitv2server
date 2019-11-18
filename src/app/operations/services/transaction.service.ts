@@ -15,7 +15,7 @@ export class TransactionService {
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authoratization': ''
+        'Authoratization': `Bearer ${localStorage.getItem('id_token')}`
       })
     };
   }
@@ -31,7 +31,9 @@ export class TransactionService {
   }
 
   getTransactions(){
-    return this._http.get<QueueITTransaction>(this._configuration.ServerOperationsWithApiUrl + "getalltransactions", this.httpOptions)
+    return this._http.get<QueueITTransaction>(this._configuration.ServerOperationsWithApiUrl + "getalltransactions", {
+      headers: this.httpOptions
+    } )
         .pipe(catchError(this.handleError));
   }
 

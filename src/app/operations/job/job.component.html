@@ -80,6 +80,7 @@
                         <th scope="col">Agent Name</th>
                         <th scope="col">Trans. Type</th>
                         <th scope="col">Reg. No.</th>
+                        <th scope="col">Amount</th>
                         <th scope="col">Status</th>
                     </tr>
                     </thead>
@@ -89,6 +90,7 @@
                         <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
                         <td>{{transaction.transactionType}}</td>
                         <td>{{transaction.platenumber}}</td>
+                        <td>₦{{transaction.amount}}</td>
                         <td>{{transaction.status}}</td>
                         <td *ngIf="transaction.status != 'Returned'" >
                             <a (click)="editTransaction(transaction.id)" class="btn btn-labeled-right btn-primary">

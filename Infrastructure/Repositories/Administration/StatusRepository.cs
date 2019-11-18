@@ -1,4 +1,4 @@
-﻿using queueitv2.Infrastructure.Repositories.Administration.interfaces;
+using queueitv2.Infrastructure.Repositories.Administration.interfaces;
 using queueitv2.Model.DomainModel;
 using MongoDB.Driver;
 using System;
@@ -15,7 +15,20 @@ namespace queueitv2.Infrastructure.Repositories.Administration
 
         }
 
-        public async Task<bool> UpdateStatusAsync(Status item)
+    public async Task<Status> GetStatusById(string id)
+    {
+      try
+      {
+        var status = await _context.GetCollection<Status>("status").FindAsync(s => s.Id == id);
+        return await status.FirstOrDefaultAsync();
+      }
+      catch (Exception ex)
+      {
+        throw ex;
+      }
+    }
+
+    public async Task<bool> UpdateStatusAsync(Status item)
         {
             var result = await _context.GetCollection<Status>("status").ReplaceOneAsync(
                 Builders<Status>.Filter.Eq(p => p.Id, item.Id),

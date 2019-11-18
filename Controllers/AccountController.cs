@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,31 +47,31 @@ namespace queueitv2.Controllers
         [HttpPost, Route("login")]
         public async Task<object> Login([FromBody] UserLoginApiModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
+            //var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
-            if (result.Succeeded)
-            {
-                var user = _userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
-                if (user != null)
-                {
-                    // Serialize and return the response
-                    var response = new
-                    {
-                        id = user.Id,
-                        auth_token = await GenerateJwtToken(model.Username, user),
-                        expires_in = 300,
-                        firstname = user.FirstName,
-                        lastname = user.LastName
-                    };
+            //if (result.Succeeded)
+            //{
+            //    var user = _userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
+            //    if (user != null)
+            //    {
+            //        // Serialize and return the response
+            //        var response = new
+            //        {
+            //            id = user.Id,
+            //            auth_token = await GenerateJwtToken(model.Username, user),
+            //            expires_in = 300,
+            //            firstname = user.FirstName,
+            //            lastname = user.LastName
+            //        };
 
-                    var json = JsonConvert.SerializeObject(response, _serializerSettings);
-                    return new OkObjectResult(json);
-                }
-                else
-                {
-                    throw new ApplicationException("USER NOT FOUND");
-                }
-            }
+            //        var json = JsonConvert.SerializeObject(response, _serializerSettings);
+            //        return new OkObjectResult(json);
+            //    }
+            //    else
+            //    {
+            //        throw new ApplicationException("USER NOT FOUND");
+            //    }
+            //}
 
             throw new ApplicationException("UNKNOWN_ERROR");
         }

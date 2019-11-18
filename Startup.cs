@@ -25,97 +25,74 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 
 namespace queueitv2
 {
-    public class Startup
+  public class Startup
+  {
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public IConfiguration Configuration { get; }
+      Configuration = configuration;
+    }
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddCors();
-            services.AddSignalR();
-            services.Configure<Settings>(options =>
-            {
-                options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
-                options.Database = Configuration.GetSection("MongoConnection:Database").Value;
-            });
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddCors();
+      services.AddSignalR();
+      services.Configure<Settings>(options =>
+      {
+        options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
+        options.Database = Configuration.GetSection("MongoConnection:Database").Value;
+      });
 
-            services.AddIdentityWithMongoStoresUsingCustomTypes<Users, IdentityRole>(
-               Configuration.GetSection("MongoConnection:ConnectionString").Value + "/" +
-               Configuration.GetSection("MongoConnection:Database").Value
-               );
+      services.AddIdentityWithMongoStoresUsingCustomTypes<Users, IdentityRole>(
+         Configuration.GetSection("MongoConnection:ConnectionString").Value + "/" +
+         Configuration.GetSection("MongoConnection:Database").Value
+         );
 
-            services.AddTransient<IMongoContext, QueueITContext>();
-            services.AddTransient<QueueITContext>();
+      services.AddTransient<IMongoContext, QueueITContext>();
+      services.AddTransient<QueueITContext>();
 
-            // ===== Add Jwt Authentication ========
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      // ===== Add Jwt Authentication ========
+      //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
+      
+      JWTTokenConfiguration.AddAuthentication(services, Configuration);
+      services.AddTransient<IUnitOfWork, UnitOfWork>();
+      services.AddTransient<UnitOfWork>();
+      services.AddMvc();
+    }
 
-                })
-                .AddJwtBearer(cfg =>
-                {
-                    cfg.RequireHttpsMetadata = false;
-                    cfg.SaveToken = true;
-                    cfg.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = Configuration["JwtIssuer"],
-                        ValidAudience = Configuration["JwtIssuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
-                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
-                    };
-                });
-
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<UnitOfWork>();
-            services.AddMvc();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddFile("App_Log/Error_Log.txt");
-            app.UseCors(
-                options => options.WithOrigins(
-                  "http://localhost:4000",
-                  "https://localhost:5001",
-                  "http://localhost:56242",
-                  "https://localhost:44328",
-                  "http://queueit.autoreglive.com")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()                
-            );
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    {
+      loggerFactory.AddFile("App_Log/Error_Log.txt");
+      app.UseCors(
+          options => options.WithOrigins(
+            "http://localhost:4000",
+            "https://localhost:5001",
+            "http://localhost:56242",
+            "https://localhost:44328",
+            "http://queueit.autoreglive.com")
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials()
+      );
 
       //app.UseDefaultFiles();
       //app.UseStaticFiles();
+      app.UseAuthentication();
+      app.UseMvc(routes =>
+      {
+        routes.MapRoute(
+                name: "default",
+                template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+      });
       app.UseSignalR(routes =>
-            {
-                routes.MapHub<MessageHub>("/message");
-                routes.MapHub<TransactionHub>("/transactions");
-            });
-
-            app.UseMvc(routes => 
-            {
-                routes.MapRoute(
-                  name: "QueueitArea",
-                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapRoute(
-               name: "default",
-               template: "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
+      {
+        routes.MapHub<MessageHub>("/message");
+        routes.MapHub<TransactionHub>("/transactions");
+      });
     }
+  }
 }

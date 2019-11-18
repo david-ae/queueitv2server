@@ -1,4 +1,4 @@
-﻿using queueitv2.Model.DomainModel;
+using queueitv2.Model.DomainModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +9,6 @@ namespace queueitv2.Infrastructure.Repositories.Administration.interfaces
     public interface IStatusRepository: IRepository<Status>
     {
         Task<bool> UpdateStatusAsync(Status obj);
-    }
+    Task<Status> GetStatusById(string id);
+  }
 }

@@ -77,7 +77,7 @@
                                 <td>{{transaction.customerName.firstname}}&nbsp;&nbsp;{{transaction.customerName.lastname}}</td>
                                 <td>{{transaction.transactionType}}</td>
                                 <td>{{transaction.platenumber}}</td>
-                                <td>{{transaction.amount}}</td>                                                
+                                <td>₦{{transaction.amount}}</td>                                                
                                 <td>{{transaction.status}}</td>
                                 <td *ngIf="transaction.status == 'Submitted'"><em>{{transaction.timeSubmitted | date:' h:mma'}}</em></td>
                                 <td *ngIf="transaction.status == 'Completed'"><em>{{transaction.timeCompleted | date:' h:mma'}}</em></td>

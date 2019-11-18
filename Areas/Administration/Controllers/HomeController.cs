@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -15,9 +16,10 @@ using queueitv2.Model.DomainModel;
 
 namespace queueitv2.Areas.Administration.Controllers
 {
-    //[Authorize]
+    
     [Route("api/administration/[controller]")]
-    [ApiController]
+  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+  [ApiController]
     public class HomeController : ControllerBase
     {
         private UnitOfWork _unitOfWork;
@@ -113,11 +115,11 @@ namespace queueitv2.Areas.Administration.Controllers
         }
 
         [HttpGet, Route("getrole")]
-        public IActionResult GetRole([FromBody]string id)
+        public async Task< IActionResult> GetRole(string id)
         {
             try
             {
-                var role = _unitOfWork.Roles.GetById(id);
+                var role = await _unitOfWork.Roles.GetRoleById(id);
                 return Ok(role);
             }
             catch (Exception ex)
@@ -208,12 +210,12 @@ namespace queueitv2.Areas.Administration.Controllers
 
         #region "TransactionType"
 
-        [HttpPost, Route("gettransactiontype")]
-        public IActionResult GetTransactiontype([FromBody]string id)
+        [HttpGet, Route("gettransactiontype")]
+        public async Task<IActionResult> GetTransactiontype(string id)
         {
             try
             {
-                var transactiontype = _unitOfWork.TransactionTypes.GetById(id);
+                var transactiontype = await _unitOfWork.TransactionTypes.GetTransactionTypeById(id);
                 return Ok(transactiontype);
             }
             catch (Exception ex)
@@ -281,7 +283,7 @@ namespace queueitv2.Areas.Administration.Controllers
         }
 
         [HttpGet, Route("getalltransactiontypes")]
-        public async Task<IActionResult> GetAllTransactionType()
+        public async Task<IActionResult> GetAllTransactionTypes()
         {
             try
             {
