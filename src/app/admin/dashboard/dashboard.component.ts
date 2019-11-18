@@ -87,8 +87,9 @@ export class DashboardComponent implements OnInit {
 
   startSignalRConnection(){
     let builder = new HubConnectionBuilder();
-    this._hubConnection = builder.withUrl(this._configuration.ApiServerSSL + 'transactions', 
-    { accessTokenFactory: () => localStorage.getItem('id_token') }).build();
+    // this._hubConnection = builder.withUrl(this._configuration.ApiServerSSL + 'transactions', 
+    // { accessTokenFactory: () => localStorage.getItem('id_token') }).build();
+    this._hubConnection = builder.withUrl(this._configuration.ApiServerSSL + 'transactions').build();
 
     this._hubConnection.on('GetTodayTransactions', data => {
       this.operationsFacade.transactions = data;
