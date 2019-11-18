@@ -57,14 +57,10 @@ namespace queueitv2.Areas.Operations.Controllers
 
     #region "SignalR Transactions Pull"
     [HttpGet, Route("getTodaysTransactions")]
-    public async Task<IActionResult> GetTodaysTransaction(string id)
+    public async Task<IActionResult> GetTodaysTransaction()
     {
       try
       {
-        var user = await _userManager.FindByIdAsync("5d72ae0a4bf5915be44e6f84");
-
-        if (user != null)
-        {
           var transactions = await _unitOfWork.Transactions.GetTodaysTransactions();
           var submittedTransactions = await _unitOfWork.Transactions.GetTodaysSubmittedTransactions();
           var processingTransactions = await _unitOfWork.Transactions.GetTodaysProcessingTransactions();
@@ -74,8 +70,7 @@ namespace queueitv2.Areas.Operations.Controllers
           await _transactionHubContext.Clients.All.SendAsync("GetTodaysRejectedTransactions", rejectedTransactions);
           await _transactionHubContext.Clients.All.SendAsync("GetTodayTransactions", transactions);
 
-          return Ok();
-        }        
+          return Ok();      
       }
       catch (Exception ex)
       {

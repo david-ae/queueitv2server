@@ -92,7 +92,7 @@
                         <td>{{transaction.platenumber}}</td>
                         <td>₦{{transaction.amount}}</td>
                         <td>{{transaction.status}}</td>
-                        <td *ngIf="transaction.status != 'Returned'" >
+                        <td *ngIf="transaction.status != 'Returned'?transaction.status != 'Completed':false" >
                             <a (click)="editTransaction(transaction.id)" class="btn btn-labeled-right btn-primary">
                                 <span class="btn-label">
                                     <i-feather name="Edit"></i-feather>

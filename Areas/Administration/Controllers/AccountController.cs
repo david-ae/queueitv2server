@@ -602,7 +602,7 @@ namespace queueitv2.Areas.Administration.Controllers
 
     [AllowAnonymous]
     [HttpGet, Route("getUserUsingAccountByEmail")]
-    public async Task<IActionResult> GetUserUsingAccountsByEmail([FromBody] string email)
+    public async Task<IActionResult> GetUserUsingAccountsByEmail( string email)
     {
       try
       {
