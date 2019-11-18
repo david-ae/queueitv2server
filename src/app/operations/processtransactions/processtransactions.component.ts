@@ -56,7 +56,7 @@ export class ProcesstransactionsComponent implements OnInit {
 
   ngOnInit() {
     this.spinner.show();
-    this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
+    this._operationsService.getTodaysTransactions()
     .subscribe(() => {
       this.spinner.hide();
     },

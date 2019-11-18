@@ -90,7 +90,7 @@ export class JobComponent implements OnInit {
   ngOnInit() {        
     this.spinner.show();
     //invoke signalr
-      this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
+      this._operationsService.getTodaysTransactions()
     .subscribe(() => {
       this.spinner.hide();
     });

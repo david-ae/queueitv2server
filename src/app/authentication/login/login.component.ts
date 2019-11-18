@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit {
       }
     );
     
-    this._operationsService.getTodaysTransactions(this.userAccess.user.identity)
+    this._operationsService.getTodaysTransactions()
     .subscribe((data: QueueITTransaction[]) => {
       
     });

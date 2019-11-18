@@ -123,7 +123,7 @@ export class DashboardComponent implements OnInit {
     this.startSignalRConnection();
     this.reportFacade.prepareSubmittedTransactionActivity(this.operationsFacade.transactions);
     this.transactionStatus = "Submitted";
-    this._operationsService.getTodaysTransactions(this.userAccess.user.identity.toString())
+    this._operationsService.getTodaysTransactions()
     .subscribe((data: QueueITTransaction[]) => {
       
     });

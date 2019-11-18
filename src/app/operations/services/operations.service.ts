@@ -31,9 +31,9 @@ export class OperationsService {
         .pipe(catchError(this.handleError));
   }
   
-  getTodaysTransactions(id: string){
+  getTodaysTransactions(){
     return this._http.get<QueueITTransaction[]>(this._configuration.ServerOperationsWithApiUrl + "getTodaysTransactions",
-    { params: { id: id },
+    { 
       headers: this.httpOptions
     } )
         .pipe(delay(100),catchError(this.handleError));

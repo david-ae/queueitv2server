@@ -46,7 +46,8 @@ export class AuthService {
   }
 
   getUserOldAccount(email: string){
-    return this._http.post(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingAccountByEmail", JSON.stringify(email), { headers: this.httpOptions})
+    return this._http.get(this._configuration.ServerAdminWithApiAccountUrl + "getUserUsingAccountByEmail", 
+     { params: { email: email } , headers: this.httpOptions})
         .pipe(delay(100), catchError(this.handleError));
   }
 
