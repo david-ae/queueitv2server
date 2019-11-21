@@ -31,20 +31,22 @@
   <table class="table">
     <tbody>
           <tr *ngFor="let trans of operationsFacade.transactions" class="post">
-            <td>{{trans.customerName.firstname}} &nbsp;{{trans.customerName.lastname}}</td>
-            <td>{{trans.platenumber}}</td>
-            <td>{{trans.transactionType}}</td>
-            <td>{{trans.timeSubmitted | date:' h:mm a'}}</td>
-            <td *ngIf="trans.timeCompleted == null; else elseCompleted">
-              {{trans.timeSubmitted | amTimeAgo }}
-            </td>   
-            <ng-template #elseCompleted>
-                <td>
-                    {{getTimeDifference(trans.timeSubmitted, trans.timeCompleted) | amDuration:'seconds' }}
+            <ng-container *ngIf="trans.status != 'Returned'">
+                <td>{{trans.customerName.firstname}} &nbsp;{{trans.customerName.lastname}}</td>
+                <td>{{trans.platenumber}}</td>
+                <td>{{trans.transactionType}}</td>
+                <td>{{trans.timeSubmitted | date:' h:mm a'}}</td>
+                <td *ngIf="trans.timeCompleted == null; else elseCompleted">
+                  {{trans.timeSubmitted | amTimeAgo }}
                 </td>   
-            </ng-template>     
-            <td *ngIf="trans.timeCompleted != 'null'"> {{ trans.timeCompleted | date: ' h:mma'}}</td>
-            <td class="{{trans.status}}">{{trans.status}}</td>
+                <ng-template #elseCompleted>
+                    <td>
+                        {{getTimeDifference(trans.timeSubmitted, trans.timeCompleted) | amDuration:'seconds' }}
+                    </td>   
+                </ng-template>     
+                <td *ngIf="trans.timeCompleted != 'null'"> {{ trans.timeCompleted | date: ' h:mma'}}</td>
+                <td class="{{trans.status}}">{{trans.status}}</td>
+            </ng-container>            
           </tr>     
     </tbody>
   </table>

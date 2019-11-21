@@ -94,7 +94,7 @@
 <div *mobxAutorun class="row">
     <div class="card mb-grid col-lg-12">
         <div *ngIf="reportFacade.getTransactionsInRange.length != 0; else reportElseBlock">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center expandable">
                         <div class="card-header-title">
                             Transactions between <em>{{displayDateFrom.day}}-{{displayDateFrom.month}}-{{displayDateFrom.year}} </em>
                             &nbsp; and &nbsp;

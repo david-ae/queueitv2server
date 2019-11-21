@@ -10,3 +10,8 @@
 .returned{
     background-color: goldenrod;
 }
+.expandable{
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}

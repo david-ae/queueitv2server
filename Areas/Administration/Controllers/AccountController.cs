@@ -85,7 +85,7 @@ namespace queueitv2.Areas.Administration.Controllers
           Datecreated = DateTime.Now
         };
 
-        var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
+        var result = await _userManager.CreateAsync(user, "password");
 
         if (result.Succeeded)
         {
@@ -492,7 +492,7 @@ namespace queueitv2.Areas.Administration.Controllers
             Datecreated = DateTime.Now
           };
 
-          var result = await _userManager.CreateAsync(user, "@Oper9ti0ns.");
+          var result = await _userManager.CreateAsync(user, "password");
 
           if (result.Succeeded)
           {

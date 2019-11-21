@@ -125,7 +125,7 @@
     <div *mobxAutorun class="row">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center expandable">
                     <div class="card-header-title">Activity Breakdown</div>
 
                     <nav class="card-header-actions">
@@ -195,7 +195,7 @@
                         </a>
                     </nav>
                 </div>
-                <div *ngIf="reportFacade.getTransactionsInRange.length != 0; else transactionAnalysisElseBlock" class="card-body collapse show" id="card2">
+                <div *ngIf="reportFacade.getTransactionsInRange.length != 0; else transactionAnalysisElseBlock" class="card-body collapse" id="card2">
                     <form [formGroup]="quickViewForm">
                         <div class="input-group"> 
                             <button class="btn btn-outline-info calendar" (click)="dTo.toggle()" type="button">Select a Date</button>
@@ -219,7 +219,7 @@
     <div *mobxAutorun class="row">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center expandable">
                     <div class="card-header-title">Teller Transaction Report</div>
 
                     <nav class="card-header-actions">
@@ -232,7 +232,7 @@
                         </a>
                     </nav>
                 </div>
-                <div *ngIf="reportFacade.tellerReportSummaries.length !== 0; else tellerTransactionReportElseBlock"  class="card-body collapse show" id="card3">
+                <div *ngIf="reportFacade.tellerReportSummaries.length !== 0; else tellerTransactionReportElseBlock"  class="card-body collapse" id="card3">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <input type="text" [(ngModel)]="searchText2" class="form-control" placeholder="Search Today's Report with Teller Name" [ngModelOptions]="{standalone:true}">
                     </div>
