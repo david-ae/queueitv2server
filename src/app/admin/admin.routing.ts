@@ -11,24 +11,25 @@ import { ManageuserroleComponent } from './manageuserrole/manageuserrole.compone
 import { ChangeuserpasswordComponent } from './changeuserpassword/changeuserpassword.component';
 import { LoginComponent } from './login/login.component';
 import { GetnewuserprofileComponent } from './getnewuserprofile/getnewuserprofile.component';
+import { AuthGuard } from '../services/authentication/auth.guard';
 
 const routes: Routes = [
     {
         path: 'admin',
-        component: ContainerComponent,
+        component: ContainerComponent,        
 
         children: [
             { path: '', pathMatch: 'full', redirectTo: 'login' },
             { path: 'login', component: LoginComponent },
-            { path: 'getnewuserprofile', component: GetnewuserprofileComponent },
-            { path: 'dashboard', component: DashboardComponent },
-            { path: 'roles', component: RolesComponent } ,
-            { path: 'transactiontypes', component: TransactiontypeComponent },
-            { path: 'status', component: StatusComponent },
-            { path: 'transaction-report', component: ReportComponent },
-            { path: 'update-user-profile', component: ManageuserprofileComponent },
-            { path: 'update-user-role', component: ManageuserroleComponent },
-            { path: 'change-user-password', component: ChangeuserpasswordComponent }
+            { path: 'getnewuserprofile', component: GetnewuserprofileComponent, canActivate: [AuthGuard] },
+            { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+            { path: 'roles', component: RolesComponent, canActivate: [AuthGuard] } ,
+            { path: 'transactiontypes', component: TransactiontypeComponent, canActivate: [AuthGuard] },
+            { path: 'status', component: StatusComponent, canActivate: [AuthGuard] },
+            { path: 'transaction-report', component: ReportComponent, canActivate: [AuthGuard] },
+            { path: 'update-user-profile', component: ManageuserprofileComponent, canActivate: [AuthGuard] },
+            { path: 'update-user-role', component: ManageuserroleComponent, canActivate: [AuthGuard] },
+            { path: 'change-user-password', component: ChangeuserpasswordComponent, canActivate: [AuthGuard] }
         ]
     }    
 ];

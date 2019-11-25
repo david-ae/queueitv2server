@@ -6,11 +6,13 @@ import { ModuleWithProviders } from '@angular/core';
 import { ProcesstransactionsComponent } from './processtransactions/processtransactions.component';
 import { LoginComponent } from './login/login.component';
 import { OperationsdashboardComponent } from './operationsdashboard/operationsdashboard.component';
+import { AuthGuard } from '../services/authentication/auth.guard';
 
 const routes: Routes = [
     {
         path: 'operations',
         component: ContainerComponent,
+        canActivate: [AuthGuard],
 
         children: [
             { path: '', pathMatch: 'full', redirectTo: 'login' },            

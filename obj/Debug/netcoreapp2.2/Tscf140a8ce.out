@@ -102,6 +102,8 @@ C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\login\logi
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\login\login.component.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\getnewuserprofile\getnewuserprofile.component.js
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\getnewuserprofile\getnewuserprofile.component.js.map
+C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\authentication\auth.guard.js
+C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\authentication\auth.guard.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\admin.routing.js
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\admin.routing.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\admin\users\users.component.js
@@ -282,6 +284,8 @@ C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\operations\servi
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\operations\services\transaction.service.spec.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\admin\userAccess.js
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\admin\userAccess.js.map
+C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\authentication\auth.guard.spec.js
+C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\services\authentication\auth.guard.spec.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\shared\_services\alert.service.spec.js
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\shared\_services\alert.service.spec.js.map
 C:\Users\david.edet\source\repos\queueitv2\dist\out-tsc\src\app\shared\implementationmodels\usertransactions.js

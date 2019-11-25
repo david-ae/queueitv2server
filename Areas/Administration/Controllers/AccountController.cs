@@ -533,7 +533,7 @@ namespace queueitv2.Areas.Administration.Controllers
 
         _configuration["Jwt:Issuer"],
 
-        expires: DateTime.Now.AddMinutes(30),
+        expires: DateTime.Now.AddMinutes(1),
 
         signingCredentials: creds);
 

@@ -187,13 +187,13 @@
                 </ul>
             </li>
             <li class="sidebar-nav-item">
-                <a [routerLink]="['/admin/login']" class="sidebar-nav-link" style="color: red">
+                <a (click)="logout()" class="sidebar-nav-link" style="color: red">
                     <span class="sidebar-nav-icon">
                     <i-feather name="LogOut">
                         Log Out
                     </i-feather>
                     </span>
-                    <span class="sidebar-nav-name">
+                    <span style="cursor: pointer;" class="sidebar-nav-name">
                     Log Out
                     </span>
                     <span class="sidebar-nav-end">
